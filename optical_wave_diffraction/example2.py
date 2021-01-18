@@ -17,7 +17,7 @@ z = 1 # propagation distance
 wave = OptWave(N,L,wvl)
 wave.planeWave()
 wave.rectAperture(D)
-wave.fresnel_integral_one_step(z)
+wave.fresnel_DI(z)
 
 # Get results
 xout = wave.x

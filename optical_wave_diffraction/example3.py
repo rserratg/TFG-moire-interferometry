@@ -17,7 +17,7 @@ z = 1 # propagation distance
 wave = OptWave(N,L,wvl)
 wave.planeWave()
 wave.rectAperture(D)
-wave.fresnel_ang_spec(z)
+wave.fresnel_AS(z) # Notice: must be bandlimited for proper results
 
 # Get results
 xout = wave.x
@@ -25,6 +25,6 @@ Uout = wave.U
 Uan = wave.planeRectFresnelSolution(z,D)
 
 # Plot results
-plt.plot(xout, np.angle(Uout), "-")
-plt.plot(xout, np.angle(Uan), "--")
+plt.plot(xout, np.abs(Uout), "-")
+plt.plot(xout, np.abs(Uan), "--")
 plt.show()

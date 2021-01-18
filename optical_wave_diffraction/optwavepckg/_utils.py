@@ -15,8 +15,7 @@ import numpy as np
         Returns freq-space amplitudes (DFT of g)
         
     Note:
-        - Shift on freq-space must be done to apply frequencies -fx:fx
-        - Shift on x-space makes results smoother in phase
+        - Shifted in x-space and freq-space
 '''
 def ft(g, delta=1):
     G = np.fft.fftshift(np.fft.fft(np.fft.fftshift(g)))
@@ -34,7 +33,8 @@ def ft(g, delta=1):
         Returns x-space amplitudes (IDFT of G)
         
     Notes:
-        Numpy normalizes the ifft by 1/N. 
+        - Numpy normalizes the ifft by 1/N. 
+        - Shifted in freq-space and x-space
 '''
 def ift(G, delta_f=1):
     g = np.fft.ifftshift(np.fft.ifft(np.fft.ifftshift(G)))

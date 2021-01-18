@@ -23,10 +23,10 @@ wave.rectAperture(D)
 
 # Propagation
 #wave.fraunhofer(z)
-#wave.fresnel_integral_one_step(z)
-#wave.fresnel_ang_spec(z)
-#wave.rayleigh_sommerfeld(z, fast=False)
-#wave.ang_spec_repr(z)
+#wave.fresnel_DI(z)
+#wave.fresnel_AS(z, 4e4)
+wave.rayleigh_sommerfeld(z, fast=False)
+#wave.angular_spectrum_repr(z, 4e4)
 
 # Get results
 xout = wave.x
@@ -45,6 +45,6 @@ Uan = wave.planeRectFresnelSolution(z,D)
 # Magnitude: np.abs(U)
 # Phase: np.angle(U)
 
-plt.plot(xout, np.abs(Uout), "-")
+plt.plot(xout, np.angle(Uout), "-")
 #plt.plot(xout, np.abs(Uan), "--")
 plt.show()
