@@ -1,0 +1,15 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*               UTILS COMMON                 *  
+**********************************************
+
+Common functions to classes.
+
+Functions:
+    - several_propagations: performs RS propagation through several masks
+    - get_date: gets current date and hour
+    - save_data_common: common save data function to be used in all the modules
+    - load_data_common_ common load data function to be used in all the modules
+    - print_axis_info: prints info about axis
+    - date_in_name: introduces a date in the filename

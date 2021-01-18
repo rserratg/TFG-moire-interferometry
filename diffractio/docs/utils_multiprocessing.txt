@@ -1,0 +1,26 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*          UTILS MULTIPROCESSING             *  
+**********************************************
+
+Functions:
+    - _pickle_method
+    - _unpickle_method
+    - separate_from_iterable
+    - execute_multiprocessing
+    - 
+
+Classes:
+    - auxiliar_multiprocessing
+    
+
+----------------------------------------------
+       AUXILIAR MULTIPROCESSING
+----------------------------------------------
+
+Attributes: none
+
+Methods:
+    - execute_multiprocessing
+    - method_single_proc

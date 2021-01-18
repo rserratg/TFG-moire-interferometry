@@ -1,0 +1,12 @@
+numpy
+scipy
+matplotlib
+nbsphinx
+hickle
+Pillow
+opencv-python
+numexpr
+mayavi
+pandas
+traits
+

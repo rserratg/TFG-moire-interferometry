@@ -1,0 +1,54 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*             UTILS OPTICS                   *  
+**********************************************
+
+General purpose optics functions
+
+    - roughness_1D
+    - roughness_2D
+    - beam_width_1D
+    - width_percentaje
+    - beam_width_2D
+    - refraction_index
+    - FWHM1D (Full Width at Half Maximum)
+    - FWHM2D
+    - DOF (depth of focus)
+    - detect_intensity_range
+    - MTF_ideal
+    - lines_mm_2_cycles_degree
+    - MTF_parameters
+    - gauss_spectrum
+    - lorentz_spectrum
+    - uniform_spectrum
+    - normalize
+    - field_parameters
+    - convert_phase2heigths
+    - convert_amplitude2heigths
+    - fresnel_coefficients_dielectric
+    - reflectance_transmitance_dielectric
+    - fresnel_coefficients_complex
+    - reflectance_transmitance_complex
+    - draw_fresnel_coefficients
+    - drawTransmitancias
+
+
+----------------------------------------------
+              NORMALIZATION
+----------------------------------------------
+* normalize(u, kind='intensity')
+
+Normalizes a field to have intensity or amplitude, etc. 1
+
+Parameters: 
+    - u (numpy.array): optical field (comes usually from field.u)
+    - kind (str): 'intensity', 'amplitude', 'logarithm'. Normalization technique.
+    
+Returns:
+    - u (numpy.array): normalized optical field
+    
+Notes:
+    - Intensity norm. = max(abs(u))
+    - Amplitude norm. = max(sqrt(abs(u)))
+    - Logarithm norm. = max(log(sqrt(abs(u))))

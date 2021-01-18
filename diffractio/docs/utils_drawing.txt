@@ -1,0 +1,20 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*             UTILS DRAWING                  *  
+**********************************************
+
+Functions for drawing
+
+Functions:
+    - view_image: reproduces image
+    - concatenate_drawings
+    - draw_2D: makes a drawing of XY
+    - draw_several_fields: draws several fields in subplots
+    - change_image_size: change the size with imageMagick
+    - extract_image_from_video: extract images from a video using imageMagick
+    - normalize_draw: gets a field and changes its characteristics for drawing
+    - prepare_drawing
+    - prepare_video
+    - make_video_from_file
+    - reduce_matrix_size: reduces the size of matrix for drawing purposes

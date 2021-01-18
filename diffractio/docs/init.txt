@@ -1,0 +1,36 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*           INIT AND SUBMODULES              *  
+**********************************************
+
+Credits:
+    - Author: Luis Miguel Sanchez Brea
+    - Email: optbrea@ucm.es
+    - Name: diffractio
+    - Link: https://pypi.org/project/diffractio/
+    - Docs: https://diffractio.readthedocs.io/en/latest/
+    
+Imports:
+    - matplotlib.pyplot as plt
+    - numpy as np
+    - scipy as sp
+    
+Units:
+    - um = 1.
+    - mm = 1000. * mm
+    - nm = um/1000.
+    - degrees = np.pi / 180.
+    - s = 1.
+    - seconds = 1.
+    - eps = 1e-6
+    - num_decimals = 4
+    
+Submodules:
+    - Scalar unidimensional fields
+        * scalar_fields_X (propagation and general functions)
+        * scalar_sources_X (light sources)
+        * scalar_masks_X (scalar masks)
+    - Scalar unidimensional X fields propagated in Z direction
+    - Scalar bidimensional fields
+    - Scalar bidimensional fields propagated in Z direction

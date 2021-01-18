@@ -1,0 +1,93 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*             SCALAR FIELDS X                *  
+**********************************************
+
+This module generates Scalar_mask_X class for defining masks.
+Its parent is Scalar_field_X.
+Class for unidimensional scalar masks.
+
+Main attributes:
+    - self.u: field
+    - self.x: x postions of the field
+    - self.wavelength: wavelength of the incident field. The field is monochromatic.
+   
+Methods:
+    - masks_from_function, mask from array
+    - slit, double slit
+    - two_levels, gray_scale
+    - prism, biprism_fresnel, biprism_fresnel_nh
+    - lens, aspheric, fresnel_lens
+    - roughness, dust, dust_different_sizes
+    - sine_grating, ronchi_grating, binary_grating, blazed_grating
+    - chirped_grating, chirped_grating_p, chirped_grating_q
+    - IOs
+    
+----------------------------------------------
+                    SLITS
+----------------------------------------------
+
+* slit
+
+    Slit (1 inside, 0 outside)
+    
+    Parameters: 
+        - x0 (float): center of slit
+        . size (float): size of slit
+        
+* double_slit
+
+    Double slit (1 inside, 0 outside)
+    
+    Parameters:
+        - x0 (float): center of slit
+        - size (float): size of slit
+        - separation (float): separation between slit centers
+        
+----------------------------------------------
+                GRATINGS
+----------------------------------------------
+
+* sine_grating
+
+    Sinusoidal grating
+    
+    Parameters:
+        - period (float): period of the grating
+        - amp_min (float): minimum amplitude
+        - amp_max (float): maximum amplitude
+        - x0 (float): shift of grating
+        
+* ronchi_grating
+
+    Amplitude binary grating, fill-factor can be defined.
+    It is obtained as a sine_grating that after is binarized.
+    Fill factor is determined as y0 = cos(pi*fill_factor)
+    
+    Parameters:
+        - period (float): period of the grating
+        - x0 (float): shift of the grating
+        - fill_factor (float): (0,1) - fill factor of grating
+        
+* binary_grating
+
+    Binary grating amplitude and/or phase
+    
+    Parameters:
+        - period (float): period of the grating
+        - amin (float): minimum amplitude
+        - amax (float): maximum amplitude
+        - phase (float): phase shift (radians)
+        - x0 (float): shift of the grating
+        - fill_factor (float): (0,1) - fill factor of the grating
+        
+* blazed_grating
+
+    Phase, blazed grating. the phase shift is determined by height and refraction index
+    
+    Parameters:
+        - period (float): period of the grating
+        - height (float): height of the grating
+        - n (float): refraction index of grating
+        - x0 (float): shift of the grating

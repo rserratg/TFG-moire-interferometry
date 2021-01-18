@@ -1,0 +1,80 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*            SCALAR SOURCES X                *  
+**********************************************
+
+This module generates Scalar_field_X class for defining sources.
+Class for unidimensional scalar masks.
+Class name: Scalar_source_X.
+Its parent is Scalar_field_X.
+
+Main attributes:
+    - self.u: field
+    - self.x: positions of the field
+    - self.wavelength: wavalength of the incident field. The field is monochromatic.
+    
+The magnitude is related to microns.
+
+Methods:
+    - plane_wave
+    - gauss_beam
+    - spherical_wave
+    - plane_waves_dict
+    - plane_waves_several_inclined
+    - gauss_beams_several_parallel
+    - gauss_beams_several_inclined
+    
+Polychromatic and extended sources are defined in scalar_field_X.py for multiprocessing purposes.
+
+----------------------------------------------
+                PLANE WAVE
+----------------------------------------------
+
+Plane wave. 
+self.u = A * exp(1.j * k * (self.x*sin(theta) + z0*cos(theta)))
+
+Parameters:
+    - A (float): maximum amplitude
+    - theta (float): angle in radians
+    - z0 (float): constant value for phase shift
+    
+----------------------------------------------
+              GAUSSIAN BEAM
+----------------------------------------------
+
+Gauss beam.
+
+Parameters:
+    - z0 (float): x position of center
+    - w0 (float): minimum beam width
+    - z0 (float): position of beam width
+    - A (float): maximum amplitude
+    - theta (float): angle in radians
+    
+----------------------------------------------
+             SPHERICAL WAVE
+----------------------------------------------
+
+Spherical wave.
+self.u = A * exp(-1.j * sign(z0) * k * Rz) / Rz
+
+Parameters:
+    - A (float): maximum amplitude
+    - x0 (float): x position of source
+    - z0 (float): z position of source
+    - mask (bool): if True, masks the spherical wave with radius
+    - radius (float): size of slit for mask
+    - normalize (bool): if True, maximum of field is 1
+    
+----------------------------------------------
+                  OTHER
+----------------------------------------------
+
+* plane_waves_dict: several plane waves with parameters defined in dictionary
+
+* plane_waves_several_inclined: several inclined plane waves
+
+* gaus_beams_several_parallel: several parallel gauss beams
+
+* gauss_beams_several_inclined: several inclined gauss beams

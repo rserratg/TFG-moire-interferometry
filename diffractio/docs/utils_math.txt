@@ -1,0 +1,40 @@
+**********************************************
+*       NOTES ON DIFFRACTIO PACKAGE          *
+*--------------------------------------------*
+*               UTILS MATH                   *  
+**********************************************
+
+Common functions to classes
+
+Functions:
+    - distance: distance between two vectors
+    - nearest: nearest element in vector to number
+    - nearest2: nearest elements in vector to numbers
+    - find_extrema: in a 2D-array, the maxima and minima are found
+    - ndgrid: n-dimensional gridding like Matlab's NDGRID
+    - get_amplitude: gets the amplitude of the field
+    - get_phase: gets the phase of the field [exp(i*phi)]
+    - amplitude2phase: u = A*exp(i*phi) -> exp(i*abs(A))
+    - phase2amplitude: passes phase of a complex field to amplitude
+    - normalize: normalize vectors with different L norm (standard is 2)
+    - binarize: binarizes vector between two levels, min and max. Centra value is (min+max)/2
+    - discretize: discretize in a given number of levels
+    - delta_kronecker: delta(a,b) = 1 if a==b else 0
+    - vector_product: vector product between two vectors (size 3x1)
+    - dot_product: dot product between two vectors (size 3x1)
+    - divergence: divergence of a field at a given point (3D cartesian coordinates)
+    - curl: curl of a field at a given point (3D cartesian coordinates)
+    - get_edges: locations of edges of binary mask (for litography engraving of gratings)
+    - cut_function: takes values of function inside range
+    - fft_convolution2d: 2D convolution using FFT
+    - fft_convolution1d: 1D convolution using FFT
+    - fft_filter: 1D convolution, using fft
+    - fft_correlation1d: 1D correlation, using FFT
+    - fft_correlation2d: 2D correlation, using FFT
+    - rotate_image: rotate image from given point
+    - cart2pol: cartesia to pola coordinate transformation
+    - pol2cart: polar to cartesian coordinate transformation
+    - fZernike: Zernike function for aberration computation
+    - laguerre_polynomial_nk: auxiliar laguerre polynomial of orders n and k
+    - get_k: provides k vector from x vector (ordered or disordered)
+    - filter_edge_1D: function 1 at center and reduced at borders, for propagation algorithms
