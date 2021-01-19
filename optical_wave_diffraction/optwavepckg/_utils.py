@@ -39,3 +39,15 @@ def ft(g, delta=1):
 def ift(G, delta_f=1):
     g = np.fft.ifftshift(np.fft.ifft(np.fft.ifftshift(G)))
     return g*len(g)*delta_f
+    
+    
+'''
+    Field normalization to amplitude/intensity 1
+        
+    Post:
+        - self.U = normalized self.U
+        
+'''
+def normalize(u):
+    norm = (np.abs(u)).max()
+    return u/norm

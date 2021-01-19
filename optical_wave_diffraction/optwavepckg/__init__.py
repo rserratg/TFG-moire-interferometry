@@ -37,3 +37,4 @@ class OptWave(
         #self.d = self.x[1]-self.x[0]
         self.wvl = lamb
         self.U = np.zeros(N, dtype=np.complex128)
+        

@@ -5,10 +5,6 @@ from ._utils import ft, ift
 import matplotlib.pyplot as plt
 from scipy.special import hankel1
 
-# FIXME: functions in proptest work properly
-# Some of the regular functions do not
-# Fix regular functions using proptest
-
 '''
     Helper (Mixin) class for the OptWave class.
     
@@ -79,9 +75,9 @@ class MixinProp:
 
         Parameters:
             - kernel (function(fx)): transfer function, parameter fx is freq-space
-            - bandlimit (double or False):
-                if not False, limit bandwidth to given maximum frequency
-                all components above that frequency are set to zero
+            - bandlimit (False or double):
+                if double, delete frequency components above given limit
+                if False, don't delete any frequency component
                 False by default
             - simpson (bool): 
                 if True, uses Simpson's rule for better accuracy
@@ -120,11 +116,30 @@ class MixinProp:
 
         # H = kernel in freq-space
         H = kernel(fx)
+
         if bandlimit:
-            H = np.where(abs(fx)>bandlimit, 0, H)
+            H = np.where(abs(fx) > bandlimit, 0, H)
 
         S = np.fft.ifft(np.fft.fft(U)*H)
         self.U = S[0:N]
+
+    # -------------------------------------------------------------------
+
+    # AUXILIARY METHODS: PROPAGATION CONDITIONS
+
+    '''
+        Bandwidth limit for far-field propagation using Angular Spectrum method
+
+        u_limit = 1/[sqrt((2*df*z)^2+1)*wvl]
+
+        Parameters:
+            - z (double): propagation distance
+            - df (double): sampling frequency / sampling interval in freq-space
+    '''
+    def _bandlimitAS(self, z, df):
+        ulim = (2*df*z)**2 + 1
+        ulim = self.wvl * np.sqrt(ulim)
+        return 1/ulim
     
 
     # --------------------------------------------------------------------
@@ -224,9 +239,11 @@ class MixinProp:
 
         Parameters:
             - z (double): propagation distance
-            - bandlimit (double or False): 
-                if not False, delete frequency components above given limit
-                False by default
+            - bandlimit (bool or double):
+                if double, delete frequency components above given limit
+                if True, calculate frequency limit and delete higher-frequency components
+                if False, don't delete any frequency component
+                True by default
 
         Post:
             - self.U = wave function after propagation
@@ -236,13 +253,19 @@ class MixinProp:
             - Output field in arbitrary units, proper constant not applied
             - Sampling condition: d >= sqrt(wvl*z/N)
     '''
-    def fresnel_AS(self, z, bandlimit=False):
+    def fresnel_AS(self, z, bandlimit=True):
         def kernelFresnelAS(fx):
             k = 2*np.pi/self.wvl
             fsq = fx**2
             H = np.sqrt(self.wvl*z)*np.exp(1j*np.pi/4)*np.exp(-1j*np.pi*self.wvl*z*fsq)        
             A = np.exp(1j*k*z)/(1j*self.wvl*z)
             return A*H
+
+        # using same result as AS (approximately correct)
+        if (type(bandlimit) is bool) and bandlimit: # bandlimit = True
+            N = len(self.x)
+            bandlimit = self._bandlimitAS(z,1/(2*self.d*N))
+            
         self._ifft_conv_(kernelFresnelAS, bandlimit)
 
     '''
@@ -299,9 +322,11 @@ class MixinProp:
 
         Parameters:
             - z (double): propagation distance
-            - bandlimit (double or False):
-                if not False, delete frequency components above given limit
-                False by default
+            - bandlimit (bool or double):
+                if double, delete frequency components above given limit
+                if True, calculate frequency limit and delete higher-frequency components
+                if False, don't delete any frequency component
+                True by default
 
         Post:
             - self.U = wave function after propagation
@@ -316,7 +341,7 @@ class MixinProp:
         References:
             - K Matsushima, T Shimobaba. Band-limited angular spectrum method for numerical simulation of free-space propagation in far and near fields.
     '''
-    def angular_spectrum_repr(self, z, bandlimit=False):
+    def angular_spectrum_repr(self, z, bandlimit=True):
         def kernelAS(fx):
             fsq = fx**2
             fsq = np.where(fsq>1/self.wvl**2, 0, fsq) # remove evanescent waves
@@ -324,4 +349,8 @@ class MixinProp:
             H = np.exp(1j*2*np.pi*z*m)
             return H
         
+        if (type(bandlimit) is bool) and bandlimit: # bandlimit = True
+            N = len(self.x)
+            bandlimit = self._bandlimitAS(z,1/(2*self.d*N))
+            
         self._ifft_conv_(kernelAS, bandlimit)
