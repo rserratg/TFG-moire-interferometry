@@ -64,10 +64,10 @@ class MixinElem:
 
     '''
         Rectangular amplitude grating
-        Every period: half 1, half 0
         
         Parameters:
             - a: grating period
+            - ff: fill factor. By default 0.5
             
         Post:
             Applies rectangular phase grating to input plane wave
@@ -77,15 +77,20 @@ class MixinElem:
             Propagation gives weird results if an aperture is not applied to the field.
             (checked with uniform plane wave)
     '''
-    def rectAmplitudeGrating(self, a):
-        G = np.cos(2*np.pi/a*self.x) >= 0
+    def rectAmplitudeGrating(self, a, ff=0.5):
+        t = np.cos(2*np.pi/a*self.x)
+        f = np.cos(np.pi * ff)
+        
+        G = np.ones(len(self.x))
+        G[t < f] = 0
+        
         self.U *= G
 
         
     '''
         Rectangular phase grating
         t = exp(-1j*phi*G)
-        G = rectangular amplitude grating (for every period: half 1, half 0)
+        G = rectangular amplitude grating (duty cycle 50%)
         
         Parameters:
             - phi: phase shift

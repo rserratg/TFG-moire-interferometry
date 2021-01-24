@@ -9,7 +9,7 @@ N = 1000# number of grid points
 L = 4e-3 # total size of the grid [m]
 wvl = 1e-6 # optical wavelength [m]
 D = 0.5e-3
-z = .1 # propagation distance
+z = .1 # propagation distance [m]
 
 # Bandlimit for AS
 # w/o zero-padding: 2e4
@@ -20,7 +20,7 @@ wave = OptWave(N,L,wvl)
 wave.planeWave()
 
 # Element
-#wave.rectAmplitudeGrating(0.2e-3)
+#wave.rectAmplitudeGrating(0.1e-3)
 wave.rectAperture(D)
 #wave.doubleSlit(1e-3, D)
 #wave.rectPhaseGrating(np.pi,0.2e-3)
@@ -28,6 +28,7 @@ wave.rectAperture(D)
 # Propagation
 #wave.fraunhofer(z)
 #wave.fresnel_DI(z)
+#wave.fresnel_CV(z)
 #wave.fresnel_AS(z, 4e4)
 #wave.rayleigh_sommerfeld(z, fast=False)
 wave.angular_spectrum_repr(z)

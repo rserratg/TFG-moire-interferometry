@@ -87,6 +87,8 @@ class MixinProp:
             - If bandlimit=0 it is treated as if it were False.
             - Important: notice that the domain is double due to zero-padding.
               Therefore, df'=2*df
+            - In some cases (e.g.: near-field from binary amplitude grating)
+              simpson might give worse results.
     '''
     def _ifft_conv_(self, kernel, bandlimit=False, simpson=True):
         
@@ -217,6 +219,7 @@ class MixinProp:
 
         Parameters:
             - z (double): propagation distance
+            - simpson (bool): if True, use Simpson rule. True by default.
 
         Post: 
             - self.U = wave function after propagation
@@ -225,13 +228,13 @@ class MixinProp:
             - dout = din, xout = xin
             - Sampling condition: d <= wvl*z/L
     '''
-    def fresnel_CV(self, z):
+    def fresnel_CV(self, z, simpson=True):
         def kernelFresnelCV(x):
             k = 2* np.pi / self.wvl
             H = np.exp(1j*k/(2*z)*x**2)
             A = np.exp(1j*k*z)/(1j*self.wvl*z)
             return A*H
-        self._fft_conv_(kernelFresnelCV)
+        self._fft_conv_(kernelFresnelCV. simpson)
 
     '''
         Propagation of optical waves based on the Fresnel approximation
@@ -244,16 +247,16 @@ class MixinProp:
                 if True, calculate frequency limit and delete higher-frequency components
                 if False, don't delete any frequency component
                 True by default
+            - simpson (bool): if True, use Simpson rule. True by default.
 
         Post:
             - self.U = wave function after propagation
 
         Notes:
             - dout = din, xout = xin
-            - Output field in arbitrary units, proper constant not applied
             - Sampling condition: d >= sqrt(wvl*z/N)
     '''
-    def fresnel_AS(self, z, bandlimit=True):
+    def fresnel_AS(self, z, bandlimit=True, simpson=True):
         def kernelFresnelAS(fx):
             k = 2*np.pi/self.wvl
             fsq = fx**2
@@ -266,7 +269,7 @@ class MixinProp:
             N = len(self.x)
             bandlimit = self._bandlimitAS(z,1/(2*self.d*N))
             
-        self._ifft_conv_(kernelFresnelAS, bandlimit)
+        self._ifft_conv_(kernelFresnelAS, bandlimit, simpson)
 
     '''
         Propagation of optical waves based on Rayleigh-Sommerfeld I formula.
@@ -275,6 +278,7 @@ class MixinProp:
         Parameters:
             - z (double): propagation distance
             - fast (bool): if True, use exponential insted of Hankle function for RS kernel
+            - simpson (bool): if True, use Simpson rule
         
         Post:
             - self.U = wave function after propagation
@@ -291,7 +295,7 @@ class MixinProp:
             - dout = din, xout = xin
             - Sampling condition: d <= wvl*sqrt(z^2+L^2/2)/L
     '''
-    def rayleigh_sommerfeld(self, z, fast=False):
+    def rayleigh_sommerfeld(self, z, fast=False, simpson=True):
 
         # Quality parameter
         dr_real = np.sqrt(self.d**2)
@@ -310,7 +314,7 @@ class MixinProp:
             hk1 = hk1 * 0.5j * k * z / R
             return hk1
 
-        self._fft_conv_(kernelRS)
+        self._fft_conv_(kernelRS, simpson)
         return quality
 
     '''
@@ -327,6 +331,7 @@ class MixinProp:
                 if True, calculate frequency limit and delete higher-frequency components
                 if False, don't delete any frequency component
                 True by default
+            - simpson (bool): if True, use Simpson rule. True by default
 
         Post:
             - self.U = wave function after propagation
@@ -341,7 +346,7 @@ class MixinProp:
         References:
             - K Matsushima, T Shimobaba. Band-limited angular spectrum method for numerical simulation of free-space propagation in far and near fields.
     '''
-    def angular_spectrum_repr(self, z, bandlimit=True):
+    def angular_spectrum_repr(self, z, bandlimit=True, simpson=True):
         def kernelAS(fx):
             fsq = fx**2
             fsq = np.where(fsq>1/self.wvl**2, 0, fsq) # remove evanescent waves
@@ -353,4 +358,45 @@ class MixinProp:
             N = len(self.x)
             bandlimit = self._bandlimitAS(z,1/(2*self.d*N))
             
-        self._ifft_conv_(kernelAS, bandlimit)
+        self._ifft_conv_(kernelAS, bandlimit, simpson)
+        
+
+    '''
+        Step for Beam Propagation Method (Fresnel approximation)
+        Same conditions as AS/Fresnel-AS
+        Only suited for near-field propagation (very small z)
+        
+        Parameters:
+            - deltaz (double): propagation distance
+            - n (double): refraction index
+        
+        Implementation taken from 'diffractio'
+        References:
+            - TC Poon, T Kim. Engineering optics with Matlab.
+            - L M Sanchez Brea. Diffractio, python module for diffraction and interference optics. https://pypi.org/project/diffractio
+    '''
+    def bpm(self, deltaz, n=1):
+        k0 = 2 * np.pi / self.wvl
+    
+        N = len(self.x)
+        L = self.x[-1] - self.x[0]
+        
+        # Initial field
+        field_z = self.U
+        
+        # Wave number in 1D (frequencies)
+        kx1 = np.linspace(0, N / 2 - 1, N / 2)
+        kx2 = np.linspace(-N / 2, -1, N / 2)
+        kx = (2 * np.pi / L) * np.concatenate((kx1, kx2))
+        
+        # Normalized phase
+        phase1 = np.exp((1j * deltaz * kx**2) / (2*k0))
+        phase2 = np.exp(-1j * n * k0 * deltaz)
+        
+        # Edge filter (supergaussian function)
+        pixelx = np.linspace(-N/2, N/2, N)
+        edgeFilter = np.exp(-((pixelx) / (0.98 * 0.5 * N))**90)
+    
+        # Field propagation
+        field_z = np.fft.ifft(np.fft.fft(field_z) * phase1) * phase2
+        self.U = field_z * edgeFilter
