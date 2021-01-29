@@ -21,17 +21,17 @@ wave.planeWave()
 
 # Element
 #wave.rectAmplitudeGrating(0.1e-3)
-wave.rectAperture(D)
+#wave.rectAperture(D)
 #wave.doubleSlit(1e-3, D)
-#wave.rectPhaseGrating(np.pi,0.2e-3)
+wave.rectPhaseGrating(np.pi,0.5e-3)
 
 # Propagation
 #wave.fraunhofer(z)
 #wave.fresnel_DI(z)
 #wave.fresnel_CV(z)
 #wave.fresnel_AS(z, 4e4)
-#wave.rayleigh_sommerfeld(z, fast=False)
-wave.angular_spectrum_repr(z)
+wave.rayleigh_sommerfeld(z, fast=False)
+#wave.angular_spectrum_repr(z)
 
 # Get results
 xout = wave.x

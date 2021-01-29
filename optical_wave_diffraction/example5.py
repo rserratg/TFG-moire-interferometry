@@ -13,13 +13,15 @@ P = 40e-6
 z = 1e-5 # propagation distance [m]
 
 z_talbot = 2*P**2/wvl
+print(z_talbot)
 
 # Sim computation
 wave = OptWave(N,L,wvl)
 wave.planeWave()
 
 # Element
-wave.rectAmplitudeGrating(P)
+wave.rectAmplitudeGrating(P, ff=0.25)
+wave.rectAperture(1200e-6)
 plt.plot(wave.x,np.abs(wave.U))
 plt.show()
 
@@ -27,9 +29,9 @@ plt.show()
 #wave.fraunhofer(z)
 #wave.fresnel_DI(z)
 #wave.fresnel_CV(z)
-wave.fresnel_AS(z_talbot/4, simpson=False)
-#wave.rayleigh_sommerfeld(z, fast=False)
-#wave.angular_spectrum_repr(z_talbot/4, simpson=False)
+#wave.fresnel_AS(z_talbot, simpson=False)
+#wave.rayleigh_sommerfeld(z_talbot, fast=False)
+wave.angular_spectrum_repr(z_talbot/4, simpson=False)
 #wave.bpm(z_talbot/4)
 
 # Get results
