@@ -43,11 +43,42 @@ def ift(G, delta_f=1):
     
 '''
     Field normalization to amplitude/intensity 1
+    
+    Parameters:
+        - u (numpy array): field amplitude or intensity
         
     Post:
-        - self.U = normalized self.U
+        Returns normalized field
         
 '''
 def normalize(u):
     norm = (np.abs(u)).max()
     return u/norm
+    
+'''
+    Field intensity
+    
+    Parameters:
+        - u (numpy array): field amplitude
+        
+    Post:
+        Returns field intensity
+'''
+def intensity(u):
+    return np.abs(u)**2
+    
+'''
+    Normalized field intensity
+    
+    Parameters:
+        - u (numpy array): field amplitude
+        
+    Post:
+        Returns normalized field intensity
+        
+    Note:
+        - Difference w.r.t. to doing normalize(intensity(u)) is that it has smaller chance
+          to produce overflow (square before vs. after normalization).
+'''
+def normalizedIntensity(u):
+    return normalize(np.abs(u))**2

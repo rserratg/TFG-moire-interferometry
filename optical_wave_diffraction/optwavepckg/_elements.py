@@ -93,14 +93,21 @@ class MixinElem:
         G = rectangular amplitude grating (duty cycle 50%)
         
         Parameters:
-            - phi: phase shift
             - P: grating period
+            - phi: phase shift
+            - ff: fill factor / duty cycle. By default 0.5
             
         Post:
             Applies rectangular phase grating to input plane wave
             Updates wave
     '''
-    def rectPhaseGrating(self, phi, P):
-        G = np.cos(2*np.pi/P*self.x) >= 0
+    def rectPhaseGrating(self, P, phi, ff=0.5):
+        # Binary amplitude grating
+        t = np.cos(2*np.pi/P*self.x)
+        f = np.cos(np.pi * ff)
+        G = np.ones(len(self.x))
+        G[t < f] = 0
+    
+        # Apply amp. gr. to phase
         self.U *= np.exp(-1j*phi*G)
     

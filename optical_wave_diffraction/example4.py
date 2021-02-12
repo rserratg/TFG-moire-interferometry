@@ -23,14 +23,14 @@ wave.planeWave()
 #wave.rectAmplitudeGrating(0.1e-3)
 #wave.rectAperture(D)
 #wave.doubleSlit(1e-3, D)
-wave.rectPhaseGrating(np.pi,0.5e-3)
+wave.rectPhaseGrating(0.5e-3, np.pi)
 
 # Propagation
 #wave.fraunhofer(z)
 #wave.fresnel_DI(z)
 #wave.fresnel_CV(z)
 #wave.fresnel_AS(z, 4e4)
-wave.rayleigh_sommerfeld(z, fast=False)
+#wave.rayleigh_sommerfeld(z, fast=False)
 #wave.angular_spectrum_repr(z)
 
 # Get results
@@ -50,6 +50,6 @@ Uan = wave.planeRectFresnelSolution(z,D)
 # Magnitude: np.abs(U)
 # Phase: np.angle(U)
 
-plt.plot(xout, np.abs(Uout), "-")
+plt.plot(xout, np.angle(Uout), "-")
 #plt.plot(xout, np.abs(Uan), "--")
 plt.show()

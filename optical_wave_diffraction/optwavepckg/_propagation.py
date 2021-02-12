@@ -234,7 +234,7 @@ class MixinProp:
             H = np.exp(1j*k/(2*z)*x**2)
             A = np.exp(1j*k*z)/(1j*self.wvl*z)
             return A*H
-        self._fft_conv_(kernelFresnelCV. simpson)
+        self._fft_conv_(kernelFresnelCV, simpson)
 
     '''
         Propagation of optical waves based on the Fresnel approximation
