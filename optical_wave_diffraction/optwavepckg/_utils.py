@@ -18,7 +18,7 @@ import numpy as np
         - Shifted in x-space and freq-space
 '''
 def ft(g, delta=1):
-    G = np.fft.fftshift(np.fft.fft(np.fft.fftshift(g)))
+    G = np.fft.fftshift(np.fft.fft(np.fft.ifftshift(g)))
     return G*delta
     
     
@@ -28,6 +28,7 @@ def ft(g, delta=1):
     Parameters:
         - G: x-space amplitudes
         - delta_f: frequency spacing
+            if delta_f = None, 1/N is used (default numpy normalization)
         
     Post:
         Returns x-space amplitudes (IDFT of G)
@@ -36,9 +37,12 @@ def ft(g, delta=1):
         - Numpy normalizes the ifft by 1/N. 
         - Shifted in freq-space and x-space
 '''
-def ift(G, delta_f=1):
-    g = np.fft.ifftshift(np.fft.ifft(np.fft.ifftshift(G)))
-    return g*len(g)*delta_f
+def ift(G, delta_f=None):
+    g = np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(G)))
+    if delta_f is None:
+        return g
+    else:
+        return g*len(g)*delta_f
     
     
 '''

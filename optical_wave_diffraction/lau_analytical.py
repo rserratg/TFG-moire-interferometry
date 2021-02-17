@@ -1,7 +1,8 @@
 # Lau effect for a grating using analytical solution
 
 # Assuming plane wave
-# Not good results
+# More accurate results with lower angle sampling interval
+# High computational cost
 
 import numpy as np
 import matplotlib.pyplot as plt

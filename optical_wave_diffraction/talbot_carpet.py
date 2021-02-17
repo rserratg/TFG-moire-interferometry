@@ -21,7 +21,7 @@ dz = 10e-6 # propagation step distance
 
 # Sim parameters - set 2
 # x-space plot: -500e-6 ,500e-6
-N = 30000
+N = 4000
 L = 20e-3
 wvl = 532e-9
 P = 200e-6
@@ -92,23 +92,23 @@ wave2.rectAmplitudeGrating(P, ff)
 #wave2.sinAmplitudeGrating(1, 1/P, L)
 
 #wave2.fresnel_AS(z_talbot*3/4, simpson=False)
-wave2.angular_spectrum_repr(z_talbot/4, simpson=False)
+wave2.angular_spectrum_repr(z_talbot, simpson=False)
 
 # ---
 wave3 = OptWave(N,L,wvl)
 wave3.planeWave()
 #wave3.rectPhaseGrating(P, np.pi, ff=0.25)
 wave3.rectAmplitudeGrating(P,ff)
-wave3.fresnel_AS(z_talbot/4, simpson=False)
+wave3.fresnel_AS(z_talbot, simpson=False)
 # ---
 
 
 #plt.plot(wave2.x, np.angle(wave2.U), "-")
 plt.plot(wave2.x, normalize(np.abs(wave2.U))**2, "-")
-plt.plot(wave2.x, normalize(np.abs(wave3.U))**2, "--")
+#plt.plot(wave2.x, normalize(np.abs(wave3.U))**2, "--")
 
 #plt.xlim(-150e-6, 150e-6)
-plt.xlim(-500e-6, 500e-6)
+#plt.xlim(-500e-6, 500e-6)
 plt.xlabel("x [m]")
 plt.ylabel("Intensity [arbitrary units]")
 #plt.title("Talbot amplitude grating: z=zt, ff={}".format(ff))

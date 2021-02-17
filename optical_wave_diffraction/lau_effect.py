@@ -1,6 +1,9 @@
 # Lau effect
 
 # Not good results
+# Even results with only one grating and normal incidence do not look good
+# Maybe because x-space is not symetric?
+# Different results from Talbot_carpet.py - why?????
 
 # L = 2*b original field size
 # 2*a observation screen size
@@ -13,7 +16,7 @@ import matplotlib.pyplot as plt
 from optwavepckg import OptWave
 from optwavepckg._utils import normalize
 
-N = 4000
+N = 10
 L = 20e-3
 wvl = 589e-9
 P = 200e-6
@@ -31,7 +34,7 @@ ang=amax
 #for ang in np.linspace(-amax, amax, 201):
 wave = OptWave(N,L,wvl)
 wave.planeWave(theta=ang)
-wave.rectAmplitudeGrating(P, 0.1)
+wave.rectAmplitudeGrating(P, 0.5)
 wave.angular_spectrum_repr(z_talbot)
 #wave.rectAmplitudeGrating(P, 0.1)
 #wave.angular_spectrum_repr(z_talbot)

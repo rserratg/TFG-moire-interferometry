@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
+from optwavepckg._utils import normalizedIntensity
 
 #Sim parameters
 N = 1000# number of grid points
@@ -21,35 +22,28 @@ wave.planeWave()
 
 # Element
 #wave.rectAmplitudeGrating(0.1e-3)
-#wave.rectAperture(D)
+#wave.rectPhaseGrating(0.5e-3, np.pi)
 #wave.doubleSlit(1e-3, D)
-wave.rectPhaseGrating(0.5e-3, np.pi)
+wave.rectAperture(D)
 
 # Propagation
 #wave.fraunhofer(z)
-#wave.fresnel_DI(z)
+wave.fresnel_DI(z)
 #wave.fresnel_CV(z)
-#wave.fresnel_AS(z, 4e4)
+#wave.fresnel_AS(z)
 #wave.rayleigh_sommerfeld(z, fast=False)
 #wave.angular_spectrum_repr(z)
 
 # Get results
 xout = wave.x
 Uout = wave.U
-
-# Analytical solution
-#Uan = wave.planeSinAmpGrAnalyticSolution(z,1,5000,D)
-#Uan = wave.planeDoubleSlitAnalyticSolution(z,1e-3,D)
-#Uan = wave.planeRectAmpGrAnalyticSolution(z,D,7.5e-2)
-#Uan = wave.planeRectAnalyticSolution(z, D)
-Uan = wave.planeRectFresnelSolution(z,D)
+#I = normalizedIntensity(Uout)
+#I = np.abs(Uout)
+I = np.angle(Uout)
 
 # Plot results
-
-# Notes on numpy: 
-# Magnitude: np.abs(U)
-# Phase: np.angle(U)
-
-plt.plot(xout, np.angle(Uout), "-")
-#plt.plot(xout, np.abs(Uan), "--")
+plt.plot(xout, I, "-")
+plt.xlabel("x [m]")
+plt.ylabel("Intensity [arbitrary units]")
+plt.xlim(-2e-3, 2e-3)
 plt.show()
