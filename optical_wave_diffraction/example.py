@@ -17,6 +17,8 @@ z = .1 # propagation distance [m]
 # w/ zero-padding: ~ 4e4
 
 # Sim computation
+
+# Generate wave
 wave = OptWave(N,L,wvl)
 wave.planeWave()
 
@@ -37,9 +39,11 @@ wave.fresnel_DI(z)
 # Get results
 xout = wave.x
 Uout = wave.U
-#I = normalizedIntensity(Uout)
+
+# Magnitude for plotting (intensity/amplitude/phase)
+I = normalizedIntensity(Uout)
 #I = np.abs(Uout)
-I = np.angle(Uout)
+#I = np.angle(Uout)
 
 # Plot results
 plt.plot(xout, I, "-")

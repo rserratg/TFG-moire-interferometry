@@ -28,7 +28,9 @@ class MixinProp:
             - simpson (bool): 
                 if True, uses Simpson's rule for better acuracy
                 True by default
-
+                
+        Note:
+            - When using Simpson, it is highly advised to use N odd
         References:
             - Ji Qiang. A high-order fast method for computing convolution integral with smooth kernel.
     '''
@@ -87,8 +89,7 @@ class MixinProp:
             - If bandlimit=0 it is treated as if it were False.
             - Important: notice that the domain is doubled due to zero-padding.
               Therefore, df'=2*df
-            - In some cases (e.g.: near-field from binary amplitude grating)
-              simpson might give worse results.
+            - When using Simpson rule, it is highly advised to use N odd
     '''
     def _ifft_conv(self, kernel, bandlimit=False, simpson=True):
         
@@ -124,6 +125,10 @@ class MixinProp:
 
         S = np.fft.ifft(np.fft.fft(U)*H)
         self.U = S[0:N]
+
+        # Print bandlimit and max freq for debugging
+        #print("B: ", bandlimit)
+        #print("f: ", fx.max())        
 
     '''
         Propagate field using impulse response.
@@ -252,6 +257,9 @@ class MixinProp:
             - z (double): propagation distance
             - fast (bool): if True, use exponential instead of Hankel function.
             - x (np.array): x-space
+            
+        Note:
+            - scipy hankel1 function returns Nan for large values of k*R (around 1e10)
     '''
     def _kernelRS(self, z, fast, x):
         k = 2 * np.pi / self.wvl
@@ -347,7 +355,7 @@ class MixinProp:
                 if pad: # if zero-padding is used, domain is doubled
                     df /= 2
                 bandlimit = self._bandlimitAS(z,df)
-                
+            
             if pad:
                 simpson = kwargs.get("simpson", True)
                 self._ifft_conv(kernel, bandlimit, simpson)
@@ -500,6 +508,7 @@ class MixinProp:
         dr_real = np.sqrt(self.d**2)
         rmax = np.sqrt((self.x**2).max())
         dr_ideal = np.sqrt(self.wvl**2 + rmax**2 + 2*self.wvl*np.sqrt(rmax**2+z**2)) - rmax
+        dr_ideal /= 2
         quality = dr_ideal/dr_real
 
         self._conv_propagation(z, "RS", fast=fast, simpson=simpson)

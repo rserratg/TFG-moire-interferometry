@@ -1,32 +1,32 @@
- Script to test propagation methods
- Plane wave w/ rectangular aperture
+# Script to generate plots for Journal - propagation methods
+# Plane wave w/ rectangular aperture
 
- Tests:
-  - Fraunhofer
-  - Fresnel DI
-  - RS / Fresnel-CV (w/o zero-padding)
-  - RS w/ zero-padding (w/o simpson)
-  - RS w/ zero-padding & simpson
-  - AS / Fresnel-AS (w/o zero-padding & bandlimit)
-  - AS w/ bandlimit (w/o zero-padding)
-  - AS w/ zero-padding (w/o bandlimit)
-  - AS w/ zero-padding & bandlimit
+# Tests:
+#  - Fraunhofer
+#  - Fresnel DI
+#  - RS / Fresnel-CV (w/o zero-padding)
+#  - RS w/ zero-padding (w/o simpson)
+#  - RS w/ zero-padding & simpson
+#  - AS / Fresnel-AS (w/o zero-padding & bandlimit)
+#  - AS w/ bandlimit (w/o zero-padding)
+#  - AS w/ zero-padding (w/o bandlimit)
+#  - AS w/ zero-padding & bandlimit
 
- To hide a plot, simply comment its "plt.show()" line
+# To hide a plot, simply comment its "plt.show()" line
 
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
 
- Sim parameters
-N = 1000  number of grid points
-L = 4e-3  total size of the grid [m]
-wvl = 1e-6  optical wavelength [m]
-D = 0.5e-3  aperture width [m]
-z = .1  propagation distance [m]
+# Sim parameters
+N = 1000 # number of grid points
+L = 4e-3 # total size of the grid [m]
+wvl = 1e-6 # optical wavelength [m]
+D = 0.5e-3 # aperture width [m]
+z = .1 # propagation distance [m]
 
 
- FRAUNHOFER
+# FRAUNHOFER
 
 wave1 = OptWave(N,L,wvl)
 wave1.planeWave()
@@ -40,7 +40,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- FRESNEL DI
+# FRESNEL DI
 
 wave2 = OptWave(N,L,wvl)
 wave2.planeWave()
@@ -54,7 +54,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- RS w/o zero-padding
+# RS w/o zero-padding
 
 wave3 = OptWave(N,L,wvl)
 wave3.planeWave()
@@ -68,7 +68,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- RS w/ zero-padding w/o simpson
+# RS w/ zero-padding w/o simpson
 
 wave4 = OptWave(N,L,wvl)
 wave4.planeWave()
@@ -82,7 +82,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- RS w/ zero-padding & simpson
+# RS w/ zero-padding & simpson
 
 wave5 = OptWave(N,L,wvl)
 wave5.planeWave()
@@ -96,7 +96,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- AS w/o zero-padding & bandlimit
+# AS w/o zero-padding & bandlimit
 
 wave6 = OptWave(N,L,wvl)
 wave6.planeWave()
@@ -110,7 +110,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- AS w/ bandlimit w/o zero-padding
+# AS w/ bandlimit w/o zero-padding
 
 wave7 = OptWave(N,L,wvl)
 wave7.planeWave()
@@ -124,7 +124,7 @@ plt.xlim(-2e-3, 2e-3)
 plt.show()
 plt.close()
 
- AS w/ zero-padding w/o bandlimit
+# AS w/ zero-padding w/o bandlimit
 
 wave8 = OptWave(N,L,wvl)
 wave8.planeWave()
@@ -139,7 +139,7 @@ plt.show()
 plt.close()
 
 
- AS w/ zero-padding & bandlimit
+# AS w/ zero-padding & bandlimit
 
 wave9 = OptWave(N,L,wvl)
 wave9.planeWave()

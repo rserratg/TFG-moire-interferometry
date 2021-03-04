@@ -120,7 +120,7 @@ zticks = []
 I = []
 x = np.arange(-N//2, N//2)*(L/N)
 
-
+#'''
 
 while z <= zmax:
     uz = talbot_wave(x, wvl, z, P, nmax, kind=kind, f=f, phi=phi)
@@ -149,7 +149,7 @@ clb.set_label('Intensity [arbitrary units]')
 plt.tight_layout()
 plt.show()
 
-
+#'''
     
 # Plot intensity pattern at talbot distance
 zt = 2*P**2/wvl

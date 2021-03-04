@@ -1,4 +1,4 @@
-# Talbot carpet for an amplitude or phase grating
+# Talbot carpet simulation for an amplitude or phase grating
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -91,25 +91,13 @@ wave2.rectAmplitudeGrating(P, ff)
 #wave2.rectPhaseGrating(P, np.pi, ff=0.25)
 #wave2.sinAmplitudeGrating(1, 1/P, L)
 
-#wave2.fresnel_AS(z_talbot*3/4, simpson=False)
 wave2.angular_spectrum_repr(z_talbot, simpson=False)
 
-# ---
-wave3 = OptWave(N,L,wvl)
-wave3.planeWave()
-#wave3.rectPhaseGrating(P, np.pi, ff=0.25)
-wave3.rectAmplitudeGrating(P,ff)
-wave3.fresnel_AS(z_talbot, simpson=False)
-# ---
 
-
-#plt.plot(wave2.x, np.angle(wave2.U), "-")
 plt.plot(wave2.x, normalize(np.abs(wave2.U))**2, "-")
-#plt.plot(wave2.x, normalize(np.abs(wave3.U))**2, "--")
 
 #plt.xlim(-150e-6, 150e-6)
 #plt.xlim(-500e-6, 500e-6)
 plt.xlabel("x [m]")
 plt.ylabel("Intensity [arbitrary units]")
-#plt.title("Talbot amplitude grating: z=zt, ff={}".format(ff))
 plt.show()

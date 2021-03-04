@@ -16,13 +16,14 @@ class MixinElem:
         
         Parameters:
             - D: aperture width
+            - x0: position of center of slit. By default 0.
             
         Post:
             Applies rectangular aperture mask to input plane wave.
             Updates wave.
     '''
-    def rectAperture(self, D):
-        self.U = np.where(np.abs(self.x) <= D/2, self.U, 0)
+    def rectAperture(self, D, x0=0.):
+        self.U = np.where(np.abs(self.x-x0) <= D/2, self.U, 0)
       
         
     '''
@@ -53,7 +54,7 @@ class MixinElem:
             - D: slit width
             
         Post:
-            Applies double slit to input plane wave
+            Applies double slit to input wave
             Updates wave
     '''
     def doubleSlit(self, a, D):
@@ -68,17 +69,19 @@ class MixinElem:
         Parameters:
             - a: grating period
             - ff: fill factor. By default 0.5
+            - x0: position shift. By default 0.
             
         Post:
-            Applies rectangular phase grating to input plane wave
+            Applies rectangular phase grating to input wave
             Updates wave
             
         Note:
             Propagation gives weird results if an aperture is not applied to the field.
             (checked with uniform plane wave)
     '''
-    def rectAmplitudeGrating(self, a, ff=0.5):
-        t = np.cos(2*np.pi/a*self.x)
+    def rectAmplitudeGrating(self, a, ff=0.5, x0=0.):
+        x = self.x - x0
+        t = np.cos(2*np.pi/a*x)
         f = np.cos(np.pi * ff)
         
         G = np.ones(len(self.x))
@@ -96,18 +99,58 @@ class MixinElem:
             - P: grating period
             - phi: phase shift
             - ff: fill factor / duty cycle. By default 0.5
+            - x0: position shift. By default 0.
             
         Post:
-            Applies rectangular phase grating to input plane wave
+            Applies rectangular phase grating to input wave
             Updates wave
     '''
-    def rectPhaseGrating(self, P, phi, ff=0.5):
+    def rectPhaseGrating(self, P, phi, ff=0.5, x0=0.):
+        x = self.x - x0
+    
         # Binary amplitude grating
-        t = np.cos(2*np.pi/P*self.x)
+        t = np.cos(2*np.pi/P*x)
         f = np.cos(np.pi * ff)
         G = np.ones(len(self.x))
         G[t < f] = 0
     
         # Apply amp. gr. to phase
         self.U *= np.exp(-1j*phi*G)
-    
+       
+        
+    '''
+        Transparent lens
+        
+        Thin lens + paraxial approximation.
+        
+        Parameters:
+            - f (double): focal length of lens
+            - x0 (double): center of lens. By default 0 (origin).
+         
+         Post:
+            Applies effect of lens to input wave.
+            Updates field
+    '''
+    def lens(self, f, x0=0):
+        k = 2*np.pi/self.wvl
+        h = (self.x-x0)**2/(2*f)
+        self.U *= np.exp(-1j*k*h)
+        
+# -------------------------------
+# TEST OBJECTS FOR PHASE IMAGING
+# -------------------------------
+        
+    '''
+        Test phase object: Trapezoidal phase function
+        
+        Parameters:
+            - phi = max phase change
+            - a = position of constant to linear phase change
+            - b = position of linear to null phase change
+     '''
+    def trapezoidPhaseObject(self, phi, a, b):
+        R = (b-np.abs(self.x))/(b-a) # pyramid function, R(a)=1, R(b)=0
+        G = np.where(np.abs(self.x) <= b, R, 0)
+        G[np.abs(self.x) <= a] = 1 # truncate pyramid to make trapezoid
+        
+        self.U *= np.exp(-1j*phi*G)

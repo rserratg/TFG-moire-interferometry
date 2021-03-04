@@ -34,9 +34,11 @@ class MixinAR:
         Notes:
             np.sinc(x) = sin(pi*x)/(pi*x)
     '''
-    def planeRectAnalyticSolution(self, z, Lx):
+    def planeRectApertureSolution(self, z, Lx):
         k = 2*np.pi/self.wvl
-        Uout = np.exp(1j*k*z*(1+self.x**2/(2*z**2)))/(1j*self.wvl*z)*Lx*np.sinc(Lx*self.x/self.wvl/z)
+        A = np.exp(1j*k*z)/np.sqrt(1j*self.wvl*z)
+        B = np.exp(1j*self.x**2/(2*z))
+        Uout = A*B*Lx*np.sinc(Lx*self.x/self.wvl/z)
         return Uout
         
         
@@ -63,7 +65,7 @@ class MixinAR:
         sa2, ca2 = sp.fresnel(alpha2)
         
         # Observation-plane field
-        B = -A*np.exp(1j*k*z)/(1j*self.wvl*z)
+        B = -A*np.exp(1j*k*z)/np.sqrt(1j*self.wvl*z)
         Uout = B*((ca2-ca1) + 1j*(sa2-sa1))
         return Uout
         

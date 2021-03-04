@@ -86,3 +86,28 @@ def intensity(u):
 '''
 def normalizedIntensity(u):
     return normalize(np.abs(u))**2
+    
+'''
+    Visibility of fringes from a grating
+    
+    V = (Imax-Imin)/(Imax+Imin)
+    Imax = integration between -P/4 and P/4
+    Imin = integration between P/4 and 3P/4
+    
+    This definition avoids experimental fluctuations
+    
+    Parameters:
+        - I (numpy array): intensity pattern
+        - x (numpy array): x-space
+        - P (float): grating period
+'''
+def visibility(I, x, P):
+    # 1 period
+    I1 = I[(x >= -P/4) & (x<=P/4)]
+    I2 = I[(x >= P/4) & (x<=3*P/4)]
+    
+    Imax = I1.sum()
+    Imin = I2.sum()
+    
+    V = (Imax-Imin)/(Imax+Imin)
+    return abs(V)

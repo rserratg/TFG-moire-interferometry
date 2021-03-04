@@ -1,53 +1,47 @@
-# Lau effect
-
-# Not good results
-# Even results with only one grating and normal incidence do not look good
-# Maybe because x-space is not symetric?
-# Different results from Talbot_carpet.py - why?????
-
-# L = 2*b original field size
-# 2*a observation screen size
-# z propagastion distance
-# amax = arctg((b-a)/z)
-# step must be sufficiently small
+# Simulation of Lau effect for an amplitude grating
 
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalize
+from optwavepckg._utils import intensity, normalize
 
-N = 10
+# Sim parameters
+N = 50000
 L = 20e-3
 wvl = 589e-9
 P = 200e-6
+f = 0.1 # duty cycle
+angmax = 0.05 # max angle of incidence in radians
 
 z_talbot = 2*P**2/wvl
-print(z_talbot)
+
+print("Z Talbot: ", z_talbot)
 
 I = np.zeros(N)
+Igr = np.zeros(N)
+
+for ang in np.linspace(-angmax,angmax, 101):
+    
+    print(ang)
+
+    wave = OptWave(N,L,wvl)
+    wave.planeWave(theta=ang)
+    wave.rectAmplitudeGrating(P, f)
+    Igr += intensity(wave.U)
+    
+    wave.angular_spectrum_repr(z_talbot/4)
+    wave.rectAmplitudeGrating(P, f)
+    wave.angular_spectrum_repr(z_talbot/4)
+    I += intensity(wave.U)
+    #break
+
+# Get x-space
 wave = OptWave(N,L,wvl)
 x = wave.x
 
-amax = 0.00
-ang=amax
-
-#for ang in np.linspace(-amax, amax, 201):
-wave = OptWave(N,L,wvl)
-wave.planeWave(theta=ang)
-wave.rectAmplitudeGrating(P, 0.5)
-wave.angular_spectrum_repr(z_talbot)
-#wave.rectAmplitudeGrating(P, 0.1)
-#wave.angular_spectrum_repr(z_talbot)
-I += np.abs(wave.U)**2
-    #break
-    
-I = normalize(I)
-
-
-
-# Plot intensity at screen
-plt.plot(x, I)
-#plt.xlim(-500e-6, 500e-6)
+plt.plot(x, normalize(Igr))
+plt.plot(x, normalize(I))
+plt.xlim(-500e-6, 500e-6)
 plt.xlabel("x [m]")
 plt.ylabel("Intensity [arbitrary units]")
 plt.show()

@@ -7,7 +7,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalize
+from optwavepckg._utils import normalize, intensity
 
 '''
     Fourier coefficients of binary amplitude grating (An).
@@ -76,6 +76,7 @@ def get_fourier_coef(n, kind, params):
     
 '''
     Wave after 1 grating
+    Included for testing purposes
     
     Parameters:
         - x (numpy.array): x-space
@@ -145,21 +146,12 @@ def lau_wave_2gr(x, wvl, theta, L1, L2, p, nmax, kind, **grparams):
                 
         u += An * phase1 * uaux
         
-    return u
-    
-'''
-    Itensity of field
-    
-    Parameters:
-        - u: complex field
-'''
-def intensity(u):
-    return np.abs(u)**2                    
+    return u                  
     
 # -------------------------------
 
 # Sim parameters
-N = 4000 # number of points
+N = 10000 # number of points
 L = 20e-3 # grid size
 wvl = 589e-9 # wavelength
 P = 200e-6 # grating period
@@ -170,11 +162,11 @@ kind = 'amplitude'
 f = 0.1 # grating duty cycle
 phi = np.pi
 
-L1 = z_talbot
+L1 = z_talbot/2
 L2 = L1
-nmax = 25 # maximum order for grating fourier series
+nmax = 20 # maximum order for grating fourier series
 
-angles = np.linspace(-0.2, 0.2, 20)
+angles = np.linspace(-0.05, 0.05, 51)
 
 x = np.arange(-N//2, N//2)*(L/N)
   
@@ -188,6 +180,12 @@ for ang in angles:
     I += intensity(u)
     
 I = normalize(I)
+
+# Grating pattern for reference
+wave = OptWave(N,L,wvl)
+wave.planeWave()
+wave.rectAmplitudeGrating(P, f)
+plt.plot(wave.x, intensity(normalize(wave.U)))
 
 plt.plot(x, I)
 plt.xlim(-500e-6, 500e-6)
