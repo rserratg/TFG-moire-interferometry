@@ -93,7 +93,7 @@ class MixinAR:
         Uout = np.sinc(D*self.x/lz)  # central sinc
         Uout += m/2*np.sinc(D*(self.x-f0*lz)/lz) # right sinc
         Uout += m/2*np.sinc(D*(self.x+f0*lz)/lz) # left sinc
-        Uout = Uout*D/2*np.exp(1j*k*z*(1+self.x**2/(2*z**2)))/(1j*lz)
+        Uout = Uout*D/2*np.exp(1j*k*z*(1+self.x**2/(2*z**2)))/np.sqrt(1j*lz)
         return Uout
        
         
@@ -118,13 +118,13 @@ class MixinAR:
         k = 2*np.pi/self.wvl
         lz = z*self.wvl
         Uout = 2*D*np.sinc(D*self.x/lz)*np.cos(np.pi*a*self.x/lz)
-        Uout = Uout*np.exp(1j*k*(z+self.x**2/(2*z)))/(1j*lz)
+        Uout = Uout*np.exp(1j*k*(z+self.x**2/(2*z)))/np.sqrt(1j*lz)
         return Uout
         
         
     '''
         Plane wave of unit amplitude
-        Rectangular amplitude grating limited by rectangular aperture
+        Rectangular amplitude grating limited by rectangular aperture (duty cycle 0.5)
         Fraunhofer propagation 
         (1D)
         
@@ -152,5 +152,5 @@ class MixinAR:
             Uout += np.sinc(L*(self.x-n*lz/a)/lz)
         Uout *= L/2*np.sinc(self.x*a/(2*lz))
         
-        Uout = Uout*np.exp(1j*k*z*(1+self.x**2/(2*z**2)))/(1j*lz)
+        Uout = Uout*np.exp(1j*k*z*(1+self.x**2/(2*z**2)))/np.sqrt(1j*lz)
         return Uout

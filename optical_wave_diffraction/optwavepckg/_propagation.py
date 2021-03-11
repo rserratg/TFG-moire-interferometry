@@ -385,11 +385,12 @@ class MixinProp:
     def fraunhofer(self, z):
         N = len(self.U)
         k = 2*np.pi/self.wvl # optical wave vector
-        fx = np.arange(-N//2, N//2)/(N*self.d)
+        
+        fx = np.fft.fftshift(np.fft.fftfreq(N, self.d))        
         self.x = self.wvl*z*fx # observation plane coordinates
         A = np.exp(1j*k*z)/np.sqrt(1j*self.wvl*z)
         self.U = A*np.exp(1j*k/(2*z)*(self.x**2))*ft(self.U,self.d)
-        self.d = self.wvl*z/(N*self.d)
+        self.d = self.x[1] - self.x[0]
         
         
     '''
@@ -421,13 +422,13 @@ class MixinProp:
         k = 2*np.pi/self.wvl
         
         xin = self.x # source plane coordinates
-        dout = self.wvl*z/(N*self.d)
-        xout = np.arange(-N//2, N//2)*dout # observation plane coordinates
+        xout = self.wvl*z*np.fft.fftshift(np.fft.fftfreq(N,self.d))
+       
         
         A = np.exp(1j*k*z)*np.exp(1j*k/(2*z)*(xout**2))/np.sqrt(1j*self.wvl*z)
         self.U = A*ft(self.U*np.exp(1j*k/(2*z)*(xin**2)), self.d)
        
-        self.d = dout
+        self.d = xout[1]-xout[0]
         self.x = xout
 
 

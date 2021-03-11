@@ -22,7 +22,7 @@ class OptWave(
         Default constructor
         
         Parameters:
-            - N: number of grid points
+            - N: number of grid points.
             - L: size of x-space
             - lamb: wavelength
             - symmetric: if True, use symmetric x-space. By default False.
@@ -34,6 +34,7 @@ class OptWave(
         Note:
             - Symmetric space recommended for N odd (more consistent with Simpson rule)
             - Symmetric: d != L/N. Asymmetric: L' != L. This formulas only work if N -> inf.
+            - N cannot be 1 or less. To avoid type issues, it is cast to integer.
     '''
     def __init__(self, N, L, wvl, symmetric=False):
         N = int(N)

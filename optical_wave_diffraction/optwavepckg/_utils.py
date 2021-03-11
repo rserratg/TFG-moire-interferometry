@@ -111,3 +111,27 @@ def visibility(I, x, P):
     
     V = (Imax-Imin)/(Imax+Imin)
     return abs(V)
+    
+'''
+    Binned field
+    Each point takes the value of the integrated field over a certain interval.
+    If N % len(I) != 0, last interval is shorter
+    
+    Parameters:
+        - I (numpy array): intensity pattern
+        - x (numpy array): x-space
+        - N (int): interval size in number of points
+        
+    Returns:
+        - binned intensity pattern
+        - new x-space (left edges of bins)
+        
+    Notes:
+        - Plot with
+            newI, newX = binning(I,x,N)
+            plt.bar(newX, newI, width=newX[1]-newX[0],align='edge')
+'''
+def binning(I, x, N):
+    newI = np.add.reduceat(I, range(0, len(I), N))
+    newX = x[::N]
+    return newI, newX
