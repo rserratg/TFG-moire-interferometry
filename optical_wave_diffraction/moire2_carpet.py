@@ -11,7 +11,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import intensity, normalizedIntensity
+from optwavepckg.utils import intensity, normalizedIntensity
 
 # Sim parameters
 N = 300001
@@ -33,7 +33,7 @@ phi = np.pi/2
 wave = OptWave(N,L,wvl)
 wave.gaussianBeam(W)
 wave.lens(f)
-wave.angular_spectrum_repr(L1)
+wave.angular_spectrum(L1)
 wave.rectPhaseGrating(P, phi)
 
 # Store field 
@@ -48,9 +48,9 @@ mask = np.abs(x) <= 10e-3 # central part of image
 for d in D[:-1]:
     print(d)
     wave.U = u
-    wave.angular_spectrum_repr(d, simpson=False)
+    wave.angular_spectrum(d, simpson=False)
     wave.rectPhaseGrating(P, phi)
-    wave.angular_spectrum_repr(Lt-L1-d)
+    wave.angular_spectrum(Lt-L1-d)
     Id = normalizedIntensity(wave.U)
     
     # Take only central data

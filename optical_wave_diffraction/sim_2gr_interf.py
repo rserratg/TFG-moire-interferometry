@@ -31,7 +31,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalizedIntensity, intensity
+from optwavepckg.utils import normalizedIntensity, intensity
 
 # COMMON SIMULATION SETTINGS
 
@@ -53,7 +53,7 @@ P = 180e-6
 f = -25e-3
 
 # Number of simulation to run (see description on top of the file)
-numsim = 7
+numsim = 2
 
 
 # SIMULATIONS
@@ -73,7 +73,7 @@ def beamprop():
     # Initial propagation (until lens)
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)
-    wave.angular_spectrum_repr(L1)
+    wave.angular_spectrum(L1)
     wave.lens(f)
     
     print('Storing results...')
@@ -93,7 +93,7 @@ def beamprop():
     for z in zticks[:-1]:
         print('z: ', z)
         wave.U = u
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         Iz = normalizedIntensity(wave.U)
         I.append(Iz)
         
@@ -122,18 +122,18 @@ def carpet():
     # Parameters
     N = 1e5 + 1
     L = 50e-3
-    zmax = 100e-3
-    znum = 1001
-    phi = np.pi/2
+    zmax = 50e-3
+    znum = 501
+    phi = np.pi
     
     print('Performing initial propagation...')
 
     # Initial propagation (untils grating)
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)
-    wave.angular_spectrum_repr(L1)
+    wave.angular_spectrum(L1)
     wave.lens(f)
-    wave.angular_spectrum_repr(L2)
+    wave.angular_spectrum(L2)
     wave.rectPhaseGrating(P, phi)
     
     print('Storing results...')
@@ -154,7 +154,7 @@ def carpet():
     for z in zticks[:-1]:
         print('z: ', z)
         wave.U = u
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         Iz = normalizedIntensity(wave.U)
         I.append(Iz)
         
@@ -170,14 +170,14 @@ def carpet():
     plt.pcolormesh(x*1e3, zticks*1e3, I)
     plt.xlabel('x [mm]')
     plt.ylabel('z [mm]')
-    #plt.xlim(-0.5, 0.5)
+    plt.xlim(-0.5, 0.5) # - 500 um to 500 um
     clb = plt.colorbar()
     clb.set_label('Intensity [arbitrary units]')
     plt.tight_layout()
-    plt.show()
+    #plt.show()
     
-    #print('Saving...')
-    #plt.savefig('Sim2_pi2_high_res.png', dpi=1200)
+    print('Saving...')
+    plt.savefig('Sim2_pi2_high_res.png', dpi=800)
     
 
 # Sim 3: image after system
@@ -195,13 +195,13 @@ def pattern():
     # Run sim
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)  
-    wave.angular_spectrum_repr(L1)
+    wave.angular_spectrum(L1)
     wave.lens(f)
-    wave.angular_spectrum_repr(L2)
+    wave.angular_spectrum(L2)
     wave.rectPhaseGrating(P, phi)
-    wave.angular_spectrum_repr(D)
+    wave.angular_spectrum(D)
     wave.rectPhaseGrating(P, phi)
-    wave.angular_spectrum_repr(L3)
+    wave.angular_spectrum(L3)
     
     # Get results
     x = wave.x
@@ -223,6 +223,7 @@ def cross_section():
     
     # Parameters
     N = 3e6 + 1
+    L = 50e-3
     phi = np.pi/2
     
     # zvals = [0.0055, 0.0073, 0.0083, 0.011, 0.0854, 0.0905, 0.0915, 0.0975] # pi gr
@@ -233,9 +234,9 @@ def cross_section():
     # Initial propagation (until grating)
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)
-    wave.angular_spectrum_repr(L1)
+    wave.angular_spectrum(L1)
     wave.lens(f)
-    wave.angular_spectrum_repr(L2)
+    wave.angular_spectrum(L2)
     wave.rectPhaseGrating(P, phi)
     
     print('Storing results...')
@@ -250,7 +251,7 @@ def cross_section():
     for z in zvals:
         print('z: ', z)
         wave.U = u
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         Iz = normalizedIntensity(wave.U)
         
         plt.plot(x*1e3, Iz)
@@ -274,7 +275,7 @@ def beamprop_nolens():
     # Initial propagation
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)
-    wave.angular_spectrum_repr(L1)
+    wave.angular_spectrum(L1)
     
     print('Storing results...')
     
@@ -293,7 +294,7 @@ def beamprop_nolens():
     for z in zticks[:-1]:
         print('z: ', z)
         wave.U = u
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         Iz = normalizedIntensity(wave.U)
         I.append(Iz)
         
@@ -332,7 +333,7 @@ def carpet_nolens():
     # Initial propagation (untils grating)
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)
-    wave.angular_spectrum_repr(L1+L2)
+    wave.angular_spectrum(L1+L2)
     wave.rectPhaseGrating(P, phi)
     
     print('Storing results...')
@@ -353,7 +354,7 @@ def carpet_nolens():
     for z in zticks[:-1]:
         print('z: ', z)
         wave.U = u
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         Iz = normalizedIntensity(wave.U)
         I.append(Iz)
         
@@ -394,11 +395,11 @@ def pattern_nolens():
     # Run sim
     wave = OptWave(N,L,wvl)
     wave.gaussianBeam(w0, z0=z0)  
-    wave.angular_spectrum_repr(L1+L2)
+    wave.angular_spectrum(L1+L2)
     wave.rectPhaseGrating(P, phi)
-    wave.angular_spectrum_repr(D)
+    wave.angular_spectrum(D)
     wave.rectPhaseGrating(P, phi, x0=P)
-    wave.angular_spectrum_repr(L3)
+    wave.angular_spectrum(L3)
     
     # Get results
     x = wave.x

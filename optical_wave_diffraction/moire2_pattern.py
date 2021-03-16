@@ -12,7 +12,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalizedIntensity, binning
+from optwavepckg.utils import normalizedIntensity, binning
 
 N = 1000001
 L = 60e-3
@@ -31,11 +31,11 @@ phi = np.pi/2
 wave = OptWave(N,L,wvl)
 wave.gaussianBeam(W)
 wave.lens(f)
-wave.angular_spectrum_repr(L1)
+wave.angular_spectrum(L1)
 wave.rectPhaseGrating(P, phi)
-wave.angular_spectrum_repr(D)
+wave.angular_spectrum(D)
 wave.rectPhaseGrating(P, phi)
-wave.angular_spectrum_repr(L2)
+wave.angular_spectrum(L2)
 I = normalizedIntensity(wave.U)
 
 plt.plot(wave.x, I)

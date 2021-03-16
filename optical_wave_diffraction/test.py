@@ -1,27 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from optwavepckg import OptWave
-from optwavepckg._utils import intensity
+from optwavepckg import OptWave2D
+from optwavepckg.utils import normalizedIntensity
 
-N = 500
-L = 20e-3
+N = 1001
+L = 4e-3
 wvl = 1e-6
+D = 0.5e-3
+z = .02
 
-z = 1
-
-wave = OptWave(N,L,wvl)
+wave = OptWave2D(N,L,wvl)
 wave.planeWave()
-wave.rectAmplitudeGrating(1e-3)
-wave.rectAperture(10e-3)
-wave.fraunhofer(z)
+wave.rectPhaseGratingX(0.1e-3, np.pi/2)
+wave.angular_spectrum(z)
 
 x = wave.x
-u = wave.U
-I = intensity(u)
+I = wave.U[wave.y==0].flatten()
 
-uan = wave.planeRectAmpGrAnalyticSolution(z, 1e-3, 10e-3)
-Ian = intensity(uan)
+I = normalizedIntensity(I)
 
 plt.plot(x, I)
-plt.plot(x, Ian, '--')
 plt.show()

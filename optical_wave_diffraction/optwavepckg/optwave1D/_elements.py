@@ -19,7 +19,7 @@ class MixinElem:
             - x0: position of center of slit. By default 0.
             
         Post:
-            Applies rectangular aperture mask to input plane wave.
+            Applies rectangular aperture mask to input wave.
             Updates wave.
     '''
     def rectAperture(self, D, x0=0.):
@@ -72,7 +72,7 @@ class MixinElem:
             - x0: position shift. By default 0.
             
         Post:
-            Applies rectangular phase grating to input wave
+            Applies rectangular amplitude grating to input wave
             Updates wave
             
         Note:
@@ -93,7 +93,7 @@ class MixinElem:
     '''
         Rectangular phase grating
         t = exp(-1j*phi*G)
-        G = rectangular amplitude grating (duty cycle 50%)
+        G = rectangular amplitude grating
         
         Parameters:
             - P: grating period
@@ -136,12 +136,11 @@ class MixinElem:
         h = (self.x-x0)**2/(2*f)
         self.U *= np.exp(-1j*k*h)
         
-# -------------------------------
-# TEST OBJECTS FOR PHASE IMAGING
-# -------------------------------
         
     '''
-        Test phase object: Trapezoidal phase function
+        Trapezoidal phase function
+
+        Test object for phase imaging.
         
         Parameters:
             - phi = max phase change

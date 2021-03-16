@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalize
+from optwavepckg.utils import normalize
 
 '''
 
@@ -51,7 +51,7 @@ while z <= zmax:
     if z == 0:
         x = wave.x
     
-    wave.angular_spectrum_repr(z, simpson=False)
+    wave.angular_spectrum(z, simpson=False)
     #wave.fresnel_AS(z, simpson=False)
     Iz = normalize(np.abs(wave.U))**2
         
@@ -91,7 +91,7 @@ wave2.rectAmplitudeGrating(P, ff)
 #wave2.rectPhaseGrating(P, np.pi, ff=0.25)
 #wave2.sinAmplitudeGrating(1, 1/P, L)
 
-wave2.angular_spectrum_repr(z_talbot, simpson=False)
+wave2.angular_spectrum(z_talbot, simpson=False)
 
 
 plt.plot(wave2.x, normalize(np.abs(wave2.U))**2, "-")

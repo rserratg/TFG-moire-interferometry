@@ -3,10 +3,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalizedIntensity
+from optwavepckg.utils import normalizedIntensity
 
 #Sim parameters
-N = 1000# number of grid points
+N = 1001 # number of grid points
 L = 4e-3 # total size of the grid [m]
 wvl = 1e-6 # optical wavelength [m]
 D = 0.5e-3
@@ -30,11 +30,11 @@ wave.rectAperture(D)
 
 # Propagation
 #wave.fraunhofer(z)
-wave.fresnel_DI(z)
+#wave.fresnel_DI(z)
 #wave.fresnel_CV(z)
 #wave.fresnel_AS(z)
 #wave.rayleigh_sommerfeld(z, fast=False)
-#wave.angular_spectrum_repr(z)
+wave.angular_spectrum(z)
 
 # Get results
 xout = wave.x
@@ -49,5 +49,5 @@ I = normalizedIntensity(Uout)
 plt.plot(xout, I, "-")
 plt.xlabel("x [m]")
 plt.ylabel("Intensity [arbitrary units]")
-plt.xlim(-2e-3, 2e-3)
+#plt.xlim(-2e-3, 2e-3)
 plt.show()

@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import intensity, normalizedIntensity
+from optwavepckg.utils import intensity, normalizedIntensity
 
 N = 50001
 L = 40e-3
@@ -18,7 +18,7 @@ wave = OptWave(N,L,wvl)
 #wave.planeWave()
 #wave.rectAperture(W)
 wave.gaussianBeam(W)
-wave.angular_spectrum_repr(30e-2)
+wave.angular_spectrum(30e-2)
 wave.lens(f)
 
 u = wave.U
@@ -30,7 +30,7 @@ I = []
 
 for z in zticks[:-1]:
     wave.U = u
-    wave.angular_spectrum_repr(z)
+    wave.angular_spectrum(z)
     I.append(normalizedIntensity(wave.U))
     
 I = np.asanyarray(I)
@@ -43,7 +43,7 @@ plt.show()
 
 
 
-wave.angular_spectrum_repr(20e-2)
+wave.angular_spectrum(20e-2)
 I = normalizedIntensity(wave.U)
 plt.plot(x, I)
 plt.show()

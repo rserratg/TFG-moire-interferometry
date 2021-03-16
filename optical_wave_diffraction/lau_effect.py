@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import intensity, normalize
+from optwavepckg.utils import intensity, normalize
 
 # Sim parameters
 N = 50000
@@ -29,9 +29,9 @@ for ang in np.linspace(-angmax,angmax, 101):
     wave.rectAmplitudeGrating(P, f)
     Igr += intensity(wave.U)
     
-    wave.angular_spectrum_repr(z_talbot/4)
+    wave.angular_spectrum(z_talbot/4)
     wave.rectAmplitudeGrating(P, f)
-    wave.angular_spectrum_repr(z_talbot/4)
+    wave.angular_spectrum(z_talbot/4)
     I += intensity(wave.U)
     #break
 

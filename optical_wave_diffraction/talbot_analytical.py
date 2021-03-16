@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import normalize
+from optwavepckg.utils import normalize
 
 '''
     Fourier coefficients of binary amplitude grating (An).

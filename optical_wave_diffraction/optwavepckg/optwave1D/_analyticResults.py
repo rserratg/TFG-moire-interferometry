@@ -38,7 +38,7 @@ class MixinAR:
         k = 2*np.pi/self.wvl
         A = np.exp(1j*k*z)/np.sqrt(1j*self.wvl*z)
         B = np.exp(1j*self.x**2/(2*z))
-        Uout = A*B*Lx*np.sinc(Lx*self.x/self.wvl/z)
+        Uout = A*B*Lx*np.sinc(Lx*self.x/self.wvl/z)        
         return Uout
         
         

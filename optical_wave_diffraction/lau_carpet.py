@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import intensity, normalize
+from optwavepckg.utils import intensity, normalize
 
 # Sim parameters
 # With this parameters simulation takes around 1h15min
@@ -33,9 +33,9 @@ def lau_output(z):
         wave = OptWave(N,L,wvl)
         wave.planeWave(theta=ang)
         wave.rectAmplitudeGrating(P,f)
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         wave.rectAmplitudeGrating(P,f)
-        wave.angular_spectrum_repr(z)
+        wave.angular_spectrum(z)
         I += intensity(wave.U)
     return normalize(I)
         

@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import intensity, visibility, binning
+from optwavepckg.utils import intensity, visibility, binning
    
 
 N = 5e5 + 1
@@ -21,17 +21,17 @@ D = 0.05e-2 # width of spatial filter (slit)
 wave = OptWave(N,L,wvl)
 wave.planeWave()
 wave.rectAmplitudeGrating(P,x0=0)
-wave.angular_spectrum_repr(zt/4)
+wave.angular_spectrum(zt/4)
 # object
 #wave.trapezoidPhaseObject(np.pi, 1e-2, 1.01e-2)
 wave.lens(12.54/4)
-wave.angular_spectrum_repr(zt/4)
+wave.angular_spectrum(zt/4)
 wave.rectAmplitudeGrating(P)
-wave.angular_spectrum_repr(2*f-zt/4)
+wave.angular_spectrum(2*f-zt/4)
 wave.lens(f)
-wave.angular_spectrum_repr(f)
+wave.angular_spectrum(f)
 #wave.rectAperture(D)
-wave.angular_spectrum_repr(f)
+wave.angular_spectrum(f)
     
 x = wave.x
 I = intensity(wave.U)

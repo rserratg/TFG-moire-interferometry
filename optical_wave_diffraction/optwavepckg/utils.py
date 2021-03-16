@@ -1,49 +1,6 @@
-# Utility functions for the OptWave class
+# Utility functions for the OptWave and OptWave2 classes
 
-# Note: this functions are not a part of the class
-
-import numpy as np
-
-'''
-    1D Fourier Transform
-    
-    Parameters:
-        - g: x-space amplitudes
-        - delta: sampling interval
-        
-    Post:
-        Returns freq-space amplitudes (DFT of g)
-        
-    Note:
-        - Shifted in x-space and freq-space
-'''
-def ft(g, delta=1):
-    G = np.fft.fftshift(np.fft.fft(np.fft.ifftshift(g)))
-    return G*delta
-    
-    
-'''
-    1D Inverse Fourier Transform
-    
-    Parameters:
-        - G: x-space amplitudes
-        - delta_f: frequency spacing
-            if delta_f = None, 1/N is used (default numpy normalization)
-        
-    Post:
-        Returns x-space amplitudes (IDFT of G)
-        
-    Notes:
-        - Numpy normalizes the ifft by 1/N. 
-        - Shifted in freq-space and x-space
-'''
-def ift(G, delta_f=None):
-    g = np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(G)))
-    if delta_f is None:
-        return g
-    else:
-        return g*len(g)*delta_f
-    
+import numpy as np 
     
 '''
     Field normalization to amplitude/intensity 1
@@ -86,6 +43,9 @@ def intensity(u):
 '''
 def normalizedIntensity(u):
     return normalize(np.abs(u))**2
+    
+    
+# TEST FUNCTIONS
     
 '''
     Visibility of fringes from a grating

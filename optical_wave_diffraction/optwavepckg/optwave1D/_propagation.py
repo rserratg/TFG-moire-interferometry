@@ -1,8 +1,6 @@
 # Propagation methods for the OptWave class
 
 import numpy as np
-from ._utils import ft, ift
-import matplotlib.pyplot as plt
 from scipy.special import hankel1
 
 '''
@@ -27,14 +25,14 @@ class MixinProp:
             - kernel (function(x)): impulse response. Parameter x is x-space
             - simpson (bool): 
                 if True, uses Simpson's rule for better acuracy
-                True by default
+                By default False
                 
         Note:
             - When using Simpson, it is highly advised to use N odd
         References:
             - Ji Qiang. A high-order fast method for computing convolution integral with smooth kernel.
     '''
-    def _fft_conv(self, kernel, simpson=True):
+    def _fft_conv(self, kernel, simpson=False):
         
         N = len(self.x)
         x = self.x
@@ -54,7 +52,7 @@ class MixinProp:
         # Zero-padding
         
         # Field
-        U = np.zeros(2*N-1, dtype=complex)
+        U = np.zeros(2*N-1, dtype=np.complex128)
         U[0:N] = np.array(u)
 
         # Double domain
@@ -83,7 +81,7 @@ class MixinProp:
                 False by default
             - simpson (bool): 
                 if True, uses Simpson's rule for better accuracy
-                True by default
+                By default False
 
         Notes:
             - If bandlimit=0 it is treated as if it were False.
@@ -91,7 +89,7 @@ class MixinProp:
               Therefore, df'=2*df
             - When using Simpson rule, it is highly advised to use N odd
     '''
-    def _ifft_conv(self, kernel, bandlimit=False, simpson=True):
+    def _ifft_conv(self, kernel, bandlimit=False, simpson=False):
         
         N = len(self.x)
         u = self.U
@@ -110,7 +108,7 @@ class MixinProp:
         # Zero-padding
 
         # Field
-        U = np.zeros(2*N-1, dtype=complex)
+        U = np.zeros(2*N-1, dtype=np.complex128)
         U[0:N] = np.array(u)
 
         # Double frequency domain
@@ -146,12 +144,16 @@ class MixinProp:
     '''
     def _fft_conv_nopad(self, kernel):
         
-        N = len(self.x)
         x = self.x
         u = self.U
 
-        H = ft(kernel(x))
-        S = ift(ft(u)*H) * self.d
+        h = kernel(x)
+
+        H = np.fft.fft(h)
+        U = np.fft.fft(u)
+        S = np.fft.ifft(H*U)*self.d
+
+        S = np.fft.fftshift(S)
         self.U = S
 
     
@@ -160,7 +162,7 @@ class MixinProp:
         (Convolution fft calculation for propagation methods)
         Not using zero-padding nor Simpson's rule.
 
-        S = IFFT[FFT[U]*H]
+        S = IFFT[FFT(U)*H]
 
         Parameters:
             - kernel (function(fx)): transfer function, parameter fx is freq-space.
@@ -200,7 +202,7 @@ class MixinProp:
 
         Parameters:
             - z (double): propagation distance
-            - df (double): sampling frequency / sampling interval in freq-space
+            - df (double): sampling interval in freq-space
     '''
     def _bandlimitAS(self, z, df):
         ulim = (2*df*z)**2 + 1
@@ -314,13 +316,13 @@ class MixinProp:
                     Only if pad=True (zero-padding is used).
                     if True, use Simpson rule for improved accuracy
                     (note that it doesn't guarantee better results)
-                    True by default.
+                    By default False.
     '''
     def _conv_propagation(self, z, method, pad=True, **kwargs):
 
         # If True, kernel in real space (RS, FresnelCV)
         # If False, kernel in frequency domain (AS, FresnelAS)
-        kernelspace = True # True if RS/FresnelCV, False if AS/FresnelAS
+        kernelspace = True
         
         # Kernel function
         kernel = None
@@ -342,7 +344,7 @@ class MixinProp:
         # Propagation
         if kernelspace:
             if pad:
-                simpson = kwargs.get("simpson", True)
+                simpson = kwargs.get("simpson", False)
                 self._fft_conv(kernel, simpson)
             else:
                 self._fft_conv_nopad(kernel)
@@ -357,7 +359,7 @@ class MixinProp:
                 bandlimit = self._bandlimitAS(z,df)
             
             if pad:
-                simpson = kwargs.get("simpson", True)
+                simpson = kwargs.get("simpson", False)
                 self._ifft_conv(kernel, bandlimit, simpson)
             else:
                 self._ifft_conv_nopad(kernel, bandlimit)
@@ -383,13 +385,17 @@ class MixinProp:
     '''
         
     def fraunhofer(self, z):
+
         N = len(self.U)
         k = 2*np.pi/self.wvl # optical wave vector
         
         fx = np.fft.fftshift(np.fft.fftfreq(N, self.d))        
         self.x = self.wvl*z*fx # observation plane coordinates
+        
         A = np.exp(1j*k*z)/np.sqrt(1j*self.wvl*z)
-        self.U = A*np.exp(1j*k/(2*z)*(self.x**2))*ft(self.U,self.d)
+        ft = np.fft.fftshift(np.fft.fft(np.fft.ifftshift(self.U)))*self.d
+        self.U = A*np.exp(1j*k/(2*z)*(self.x**2))*ft
+        
         self.d = self.x[1] - self.x[0]
         
         
@@ -418,16 +424,21 @@ class MixinProp:
         
     '''
     def fresnel_DI(self, z):
+
         N = len(self.U)
         k = 2*np.pi/self.wvl
         
         xin = self.x # source plane coordinates
-        xout = self.wvl*z*np.fft.fftshift(np.fft.fftfreq(N,self.d))
-       
+        xout = self.wvl*z*np.fft.fftshift(np.fft.fftfreq(N,self.d))       
         
         A = np.exp(1j*k*z)*np.exp(1j*k/(2*z)*(xout**2))/np.sqrt(1j*self.wvl*z)
-        self.U = A*ft(self.U*np.exp(1j*k/(2*z)*(xin**2)), self.d)
+        
+        #self.U = A*ft(self.U*np.exp(1j*k/(2*z)*(xin**2)), self.d)
        
+        u = self.U*np.exp(1j*k/(2*z)*(xin**2))
+        ft = np.fft.fftshift(np.fft.fft(np.fft.ifftshift(u)))*self.d
+        self.U = A*ft
+
         self.d = xout[1]-xout[0]
         self.x = xout
 
@@ -439,7 +450,7 @@ class MixinProp:
 
         Parameters:
             - z (double): propagation distance
-            - simpson (bool): if True, use Simpson rule. True by default.
+            - simpson (bool): if True, use Simpson rule. By default False.
 
         Post: 
             - self.U = wave function after propagation
@@ -449,7 +460,7 @@ class MixinProp:
             - Sampling condition: d <= wvl*z/L
             - Zero padding is used.
     '''
-    def fresnel_CV(self, z, pad=True, simpson=True):
+    def fresnel_CV(self, z, simpson=False):
         self._conv_propagation(z, "FresnelCV", simpson=simpson)
 
 
@@ -464,7 +475,7 @@ class MixinProp:
                 if True, calculate frequency limit and delete higher-frequency components
                 if False, don't delete any frequency component
                 True by default
-            - simpson (bool): if True, use simpson rule. True by default.
+            - simpson (bool): if True, use simpson rule. By default False.
 
         Post:
             - self.U = wave function after propagation
@@ -474,18 +485,19 @@ class MixinProp:
             - Sampling condition: d >= sqrt(wvl*z/N)
             - Zero padding is used
     '''
-    def fresnel_AS(self, z, bandlimit=True, pad=True, simpson=True):
+    def fresnel_AS(self, z, bandlimit=True, simpson=False):
         self._conv_propagation(z, "FresnelAS", bandlimit=bandlimit, simpson=simpson)
 
 
     '''
         Propagation of optical waves based on Rayleigh-Sommerfeld I formula.
         FFT convolution method.
+        (1D)
 
         Parameters:
             - z (double): propagation distance
             - fast (bool): if True, use exponential insted of Hankle function for RS kernel
-            - simpson (bool): if True, use Simpson rule. True by default 
+            - simpson (bool): if True, use Simpson rule. By default False 
         
         Post:
             - self.U = wave function after propagation
@@ -498,12 +510,11 @@ class MixinProp:
         Notes:
             - This approach returns a quality parameter. If quality>1, propagation is correct.
             - Assuming n=1.
-            - Result not normalized or scaled with proper constant.
             - dout = din, xout = xin
             - Sampling condition: d <= wvl*sqrt(z^2+L^2/2)/L
             - Zero padding is used
     '''
-    def rayleigh_sommerfeld(self, z, fast=False, simpson=True):
+    def rayleigh_sommerfeld(self, z, fast=False, simpson=False):
 
         # Quality parameter
         dr_real = np.sqrt(self.d**2)
@@ -530,7 +541,7 @@ class MixinProp:
                 if True, calculate frequency limit and delete higher-frequency components
                 if False, don't delete any frequency component
                 True by default
-            - simpson (bool): if True, use Simpson rule. True by default
+            - simpson (bool): if True, use Simpson rule. By default False
 
         Post:
             - self.U = wave function after propagation
@@ -539,13 +550,13 @@ class MixinProp:
             - dout = din, xout = xin
             - Sampling condition: wvl*z*N/(L*sqrt(L^2-2*(wvl*N/2)^2)) <= 1
             - Bandwidth condition: fx_limit = 1/(wvl*sqrt(1+(2*df*z)^2))
-            - (bandwidth condition can be applied for good results in far field, even if sampling condition isn't met)
+              (bandwidth condition can be applied for good results in far field, even if sampling condition isn't met)
             - Zero padding is used. Notice that, in this case, df'=df/2 
 
         References:
             - K Matsushima, T Shimobaba. Band-limited angular spectrum method for numerical simulation of free-space propagation in far and near fields.
     '''
-    def angular_spectrum_repr(self, z, bandlimit=True, simpson=True):
+    def angular_spectrum(self, z, bandlimit=True, simpson=False):
         self._conv_propagation(z, "AS", bandlimit=bandlimit, simpson=simpson)
 
     '''

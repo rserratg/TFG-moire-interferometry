@@ -35,7 +35,7 @@ class MixinWave:
             - x0 (double): position of center (x0=0 by default)
             - z0 (double): position w.r.t. beam waist (z0=0 by default)
                            Positive for divergent beam (right of beam waist)
-                           Negative for divergent beam (left of beam waist)
+                           Negative for convergent beam (left of beam waist)
             - A (double): maximum amplitude (A=1 by default)
             - theta (double): angle in radians (theta=0 by default)
             

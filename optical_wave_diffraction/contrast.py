@@ -7,7 +7,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg._utils import intensity, visibility
+from optwavepckg.utils import intensity, visibility
    
 
 N = 500001  
@@ -29,7 +29,7 @@ for zz in z:
     wave.planeWave()
     #wave.rectAmplitudeGrating(P)
     wave.rectPhaseGrating(P, np.pi/2)
-    wave.angular_spectrum_repr(zz, simpson=False)
+    wave.angular_spectrum(zz, simpson=False)
     Vz = visibility(intensity(wave.U), wave.x, P)
     V.append(Vz)
     
