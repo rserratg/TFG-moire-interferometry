@@ -83,5 +83,5 @@ class OptWave2D(
         self.wvl = wvl
 
         # Init field
-        self.U = np.zeros((Nx,Ny), dtype=np.complex128)
+        self.U = np.zeros((Ny,Nx), dtype=np.complex128)
 

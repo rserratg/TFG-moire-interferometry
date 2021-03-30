@@ -26,6 +26,8 @@
     6. Talbot carpet for 100mm after a single pi/2 (& pi)
     7. Image for two pi/2 gratings with a separation of 20 mm
     
+    8. Carpet after two pi/2 gratings
+    
 '''
 
 import numpy as np
@@ -53,7 +55,7 @@ P = 180e-6
 f = -25e-3
 
 # Number of simulation to run (see description on top of the file)
-numsim = 2
+numsim = 8
 
 
 # SIMULATIONS
@@ -122,9 +124,9 @@ def carpet():
     # Parameters
     N = 1e5 + 1
     L = 50e-3
-    zmax = 50e-3
-    znum = 501
-    phi = np.pi
+    zmax = 100e-3
+    znum = 601
+    phi = np.pi/2
     
     print('Performing initial propagation...')
 
@@ -170,7 +172,7 @@ def carpet():
     plt.pcolormesh(x*1e3, zticks*1e3, I)
     plt.xlabel('x [mm]')
     plt.ylabel('z [mm]')
-    plt.xlim(-0.5, 0.5) # - 500 um to 500 um
+    #plt.xlim(-0.5, 0.5) # - 500 um to 500 um
     clb = plt.colorbar()
     clb.set_label('Intensity [arbitrary units]')
     plt.tight_layout()
@@ -322,8 +324,8 @@ def carpet_nolens():
     print('Simulation 6')
 
     # Parameters
-    N = 2e4 + 1
-    L = 6e-3
+    N = 2e4
+    L = 20e-3
     zmax = 100e-3
     znum = 501
     phi = np.pi/2
@@ -343,8 +345,8 @@ def carpet_nolens():
     u = wave.U
    
     # Prepare sim
-    zticks = np.linspace(0, zmax, znum)
-    #zticks = np.linspace(0, 600e-3, 601)
+    #zticks = np.linspace(0, zmax, znum)
+    zticks = np.linspace(0, 50e-3, 201)
     I = []
     
     print('Running simulation...')
@@ -370,14 +372,14 @@ def carpet_nolens():
     plt.pcolormesh(x*1e3, zticks*1e3, I)
     plt.xlabel('x [mm]')
     plt.ylabel('z [mm]')
-    #plt.xlim(-0.5, 0.5)
+    plt.xlim(-0.5, 0.5)
     clb = plt.colorbar()
     clb.set_label('Intensity [arbitrary units]')
     plt.tight_layout()
-    plt.show()
+    #plt.show()
     
-    #print('Saving...')
-    #plt.savefig('Sim6_pi2_high_res.png', dpi=200)
+    print('Saving...')
+    plt.savefig('Sim6_pi2_high_res.png', dpi=200)
 
 
 # Sim 7: image after system (no lens)
@@ -412,6 +414,76 @@ def pattern_nolens():
     plt.xlabel('x [mm]')
     plt.ylabel('Intensity [arbitrary units]')
     plt.show() 
+    
+
+# Sim 8: carpet after system
+def carpet_2gr():
+    
+    print('Simulation 8')
+    
+    # Parameters
+    N = 1e5
+    L = 50e-3
+    phi = np.pi/2
+    zmax = 100e-3
+    znum = 501
+    
+    zt = 2*P**2/wvl
+    D = 38.25e-3
+    
+    print('Performing initial propagation...')
+    
+    # Initial propagation (until second grating)
+    wave = OptWave(N,L,wvl)
+    wave.gaussianBeam(w0, z0=z0)
+    wave.angular_spectrum(L1)
+    wave.lens(f)
+    wave.angular_spectrum(L2)
+    wave.rectPhaseGrating(P, phi)
+    wave.angular_spectrum(D)
+    wave.rectPhaseGrating(P, phi)
+    
+    print('Storing results...')
+    
+    # Store intermediate results
+    x = wave.x
+    u = wave.U
+    
+    # Prepare sim
+    zticks = np.linspace(0, zmax, znum)
+    I = []
+
+    print('Running simulation')
+
+    # Run sim
+    for z in zticks[:-1]:
+        print('z: ', z)
+        wave.U = u
+        wave.angular_spectrum(z)
+        #Iz = normalizedIntensity(wave.U)
+        Iz= intensity(wave.U)
+        I.append(Iz)
+        
+    # Convert list to numpy array
+    I = np.asanyarray(I)
+    
+    # Prepare x axis for plotting
+    x = np.concatenate((x, [-x[0]]))
+    
+    print('Plotting...')
+    
+    # Plot I(x,z)
+    plt.pcolormesh(x*1e3, zticks*1e3, I)
+    plt.xlabel('x [mm]')
+    plt.ylabel('z [mm]')
+    #plt.xlim(-5, 5)
+    clb = plt.colorbar()
+    clb.set_label('Intensity [arbitrary units]')
+    plt.tight_layout()
+    
+    print('Saving...')
+    
+    plt.savefig('Sim8_pi2', dpi=800)
 
 
 # MAIN SCRIPT
@@ -429,6 +501,8 @@ elif numsim == 6:
     carpet_nolens()
 elif numsim == 7:
     pattern_nolens()
+elif numsim == 8:
+    carpet_2gr()
 else:
     print('Incorrect sim number')
     exit()

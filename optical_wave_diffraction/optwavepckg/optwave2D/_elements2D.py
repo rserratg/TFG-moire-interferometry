@@ -109,4 +109,4 @@ class MixinElem2D:
         R2 = X2 + Y2
 
         H = R2/(2*f)
-        self.U *= np.exp(1j*k*H)
+        self.U *= np.exp(-1j*k*H)

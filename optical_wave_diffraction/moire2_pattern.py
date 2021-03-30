@@ -12,7 +12,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg.utils import normalizedIntensity, binning
+from optwavepckg.utils import normalizedIntensity
 
 N = 1000001
 L = 60e-3
@@ -41,6 +41,3 @@ I = normalizedIntensity(wave.U)
 plt.plot(wave.x, I)
 plt.show()
 
-newI, newX = binning(I,wave.x,10000)
-plt.bar(newX, newI, width=newX[1]-newX[0],align='edge')
-plt.show()

@@ -135,7 +135,7 @@ class MixinElem:
         k = 2*np.pi/self.wvl
         h = (self.x-x0)**2/(2*f)
         self.U *= np.exp(-1j*k*h)
-        
+
         
     '''
         Trapezoidal phase function

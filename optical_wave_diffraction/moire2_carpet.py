@@ -53,6 +53,9 @@ for d in D[:-1]:
     wave.angular_spectrum(Lt-L1-d)
     Id = normalizedIntensity(wave.U)
     
+    print(u)
+    print(wave.U)
+    
     # Take only central data
     I.append(Id[mask])
 

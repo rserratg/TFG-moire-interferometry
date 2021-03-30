@@ -1,6 +1,9 @@
 # Simulation - 2 grating interferometer
 # Simuations to compare with experimental results
 
+# Fixed setup until second grating
+# Variable distance from G2 to camera
+
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave2D
@@ -21,7 +24,10 @@ z0 = 7.26e-3
 L1 = 40e-3
 L2 = 150e-3
 D = 20e-3
-L3 = 150e-3
+
+Lmin = 20e-2
+Lmax = 36e-2
+Lstep = 2e-2
 
 # Grating settings
 P = 180e-6
@@ -31,10 +37,10 @@ phi = np.pi/2
 f = -25e-3
 
 # Numerical parameters
-N = 1024*10
-M = 1000
+N = 1024*8
+M = 1024
 Lx = 30e-3
-Ly = 10e-3
+Ly = 5e-3
 
 # Run sim
 
@@ -55,39 +61,48 @@ wave.rectPhaseGratingX(P, phi)
 
 print('Propagation to second grating...')
 
-wave.angular_spectrum(11.1e-3)
-#wave.rectPhaseGratingX(P, phi)
+wave.angular_spectrum(D)
+wave.rectPhaseGratingX(P, phi)
 
-print('Propagation to camera...')
+print('Storing intermediate results...')
 
-#wave.angular_spectrum(L3)
-
-# Get results
+# Warning: u0 = wave.U as long as wave.U is not modified
+# For safety, it would be better to use a copy (or deepcopy)
+# We can use it here because we apply np.fft.fft, which returns a new object
 x = wave.x
 y = wave.y
-I = normalizedIntensity(wave.U)
+u0 = wave.U
 
-# Plot
-print('Plotting...')
+print('Propagations to camera')
 
-# Resample less points
-#stepx = int(N/1e4)
-stepy = int(M/1e2)
-#x = x[::stepx]
-y = y[::stepy]
-I = I[::stepy,:]
+L = Lmin
 
-plt.plot(x, I[y==0].flatten())
-plt.show()
+# We do it this way to avoid rounding errors in L3 <= L3max
+while L < Lmax + Lstep/2:
+    print(L)
 
-exit()
+    wave.U = u0   
+    wave.angular_spectrum(L-L2-D)
 
-plt.pcolormesh(x, y, I, shading='nearest')
-plt.xlabel('x [m]')
-plt.ylabel('y [m]')
-plt.axis('scaled')
-clb = plt.colorbar()
-clb.set_label('Intensity [arbitrary units]')
-plt.show()
+    I = normalizedIntensity(wave.U)
+    
+    # Reduce points in plot
+    xmax = 5e-3
+    condx = (x > -xmax) & (x < xmax) 
+    xaux = x[condx]
+    I = I[:,condx]
+
+    plt.figure()
+    plt.pcolormesh(xaux*1e3, y*1e3, I, shading='nearest')
+    plt.xlabel('x [mm]')
+    plt.ylabel('y [mm]')
+    plt.axis('scaled')
+    clb = plt.colorbar()
+    clb.set_label('Intensity [arbitrary units]')
+    plt.show()
+    
+    #plt.savefig('plt_sim2/Moire2gr_'+str(int(L*1e2))+'.png')
+    
+    L += Lstep
 
 
