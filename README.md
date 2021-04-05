@@ -2,7 +2,7 @@
 
 ## Simulation of gravitational constant measurement using a Three Phase-Grating Neutron Interferometer
 
-Codes for the final research project for the degree in Engineering Physics + Informatics Engineering at CFIS-UPC (Universitat Politècnica de Catalunya, Barcelona, Spain). Research conducted under the supervision of J. Boronat (UPC) and in collaboration with D. Pushin (IQC - Institute for Quantum Computing, Waterloo, Canada).
+Codes for the final research project for the degree in Engineering Physics + Informatics Engineering at CFIS-UPC (Universitat Politècnica de Catalunya, Barcelona, Spain). Research conducted under the supervision of J. Boronat (UPC) and D. Pushin (IQC - Institute for Quantum Computing, Waterloo, Canada).
 
 ### Contents
 

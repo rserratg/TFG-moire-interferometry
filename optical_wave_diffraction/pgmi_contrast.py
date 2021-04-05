@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from optwavepckg import OptWave
 from optwavepckg.utils import intensity, contrast, contrast_period, rebin
 
-numsim = 2
+numsim = 1
 
 # Beam parameters
 wvl = 1.55e-6
@@ -22,14 +22,18 @@ f = -75e-3
 # Sim 1: contrast from a single output pattern in 2pgmi
 def contrast_single_pattern():
     
-    N = 1e6
-    S = 60e-3 # field size
-
+    N = 5e5
+    S = 100e-3 # field size
+    
     L0 = 11e-2
     L1 = 32e-2
-    D = 3e-3
+    D = 30e-3
     L = 1
     L2 = L - (-f + L1 + D)
+    
+    if L2 < 0:
+        print('Invalid parameters: negative propagation')
+        return      
     
     print('Calculating output pattern...')
     
@@ -51,7 +55,7 @@ def contrast_single_pattern():
     ref.gaussianBeam(w0, z0=z0)
     ref.angular_spectrum(L0)
     ref.lens(f)
-    ref.angular_spectrum(L1 + D + L2)
+    ref.angular_spectrum(L + f)
     
     # Get results
     x = wave.x
@@ -70,7 +74,7 @@ def contrast_single_pattern():
     
     # Calculate contrast from known period
     Pd = P*L/D
-    c, Pf, sdPf, fit = contrast_period(x, Is, Pd, xlim=(-25e-3,25e-3), retfit = True)
+    c, Pf, sdPf, fit = contrast_period(x, Is, Pd, xlim=(-10e-3,10e-3), retfit = True)
     print('Expected period:', Pd*1e3, 'mm')
     print('Contrast:', c)
     print('Fitted period:', Pf*1e3, 'mm')
@@ -78,8 +82,10 @@ def contrast_single_pattern():
    
     print('Plotting...')
     
-    plt.plot(x, I)
-    plt.plot(x, fit*Iref, '--')
+    plt.plot(x*1e3, I)
+    plt.plot(x*1e3, fit*Iref, '--')
+    plt.xlabel('x [mm]')
+    plt.ylabel('Intensity [arb. units]')
     plt.show()
     
 
@@ -95,6 +101,18 @@ def contrast_2pgmi():
     
     dvals = np.linspace(1e-3, 200e-3, 200)
     
+    # Parametres provisionals
+    N = 1e5
+    S = 20e-3
+    wvl = 0.55e-6
+    w0 = 0.44e-3
+    z0 = 0
+    f = -5e-3
+    P = 14.4e-6
+    L = 20e-2
+    L1 = 10e-2
+    dvals = np.linspace(0.05e-3, 5e-3, 100)
+    
     print('Calculating reference field...')
     
     ref = OptWave(N,S,wvl)
@@ -108,7 +126,7 @@ def contrast_2pgmi():
     # Field until first grating
     wave = OptWave(N, S, wvl)
     wave.gaussianBeam(w0, z0=z0)
-    wave.angular_spectrum(L0)
+    #wave.angular_spectrum(L0)
     wave.lens(f)
     wave.angular_spectrum(L1)
     wave.rectPhaseGrating(P, np.pi/2)
@@ -159,7 +177,7 @@ def contrast_2pgmi():
     ax1.set_xlabel('D [mm]')
     ax1.set_ylabel('Contrast', color=color)
     ax1.set_ylim(0, 1)
-    ax1.plot(dvals*1e3, C, '.')
+    ax1.plot(dvals*1e3, C, 'o-', color=color)
     
     ax2 = ax1.twinx()
     
@@ -168,8 +186,8 @@ def contrast_2pgmi():
     #ax2.errorbar(dvals*1e3, Pd*1e3, yerr=sdPd*1e3, color=color, fmt='x')
     
     color = 'tab:red'
-    ax2.set_ylabel('Frequency [kHz]', color=color)
-    ax2.plot(dvals*1e3, 1/Pd*1e-3, color=color)
+    ax2.set_ylabel('Frequency [mm^-1]', color=color)
+    ax2.plot(dvals*1e3, 1/Pd*1e-3, 'x-', color=color)
     
     fig.tight_layout()
     plt.show()

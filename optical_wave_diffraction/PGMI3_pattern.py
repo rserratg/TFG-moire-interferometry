@@ -1,4 +1,4 @@
-# SIMULATION - 3 PGMI
+# Three phase-grating moire interferometer
 # Pattern after system
 # Result fitted to sinusoid
 

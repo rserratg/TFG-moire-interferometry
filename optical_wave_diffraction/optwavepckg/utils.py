@@ -63,7 +63,7 @@ def normalizedIntensity(u):
         - avg (bool):
             If True, use average over each bin.
             If False, use sum over each bin.
-            By default True.
+            By default False.
         
     Returns:
         - xmod (np.array): rebinned x-space
@@ -76,7 +76,7 @@ def normalizedIntensity(u):
         - All bins except the last (right-most) are half-open.
         - Size of pixels can be obtained as: pixel_size = xmod[1]-xmod[0]
 '''
-def rebin(x, u, N, fast=False, avg=True):
+def rebin(x, u, N, fast=False, avg=False):
 
     N = int(N)
     
@@ -125,7 +125,7 @@ def rebin(x, u, N, fast=False, avg=True):
         - avg (bool):
             If True, average over each bin
             If False, sum over each bin
-            By default True.
+            By default False.
             
             
     Returns:
@@ -138,7 +138,7 @@ def rebin(x, u, N, fast=False, avg=True):
         - Reshape method requires that Nx (Ny) divides the number of points in x (y)
         - It is assumed that shape(u) = (len(y), len(x))
 '''            
-def rebin2(x, y, u, bins, fast=False, avg=True):
+def rebin2(x, y, u, bins, fast=False, avg=False):
 
     # Check if N is int or tuple
     # Cast to int for safety
@@ -242,8 +242,7 @@ def contrast(x, u, P, xlim = None, retfit = False):
     else:
         return C
         
-    
-# WARNING: TEST FUNCTION
+# WARNING: TEST FUNCTIONS
 '''
     Contrast and period from periodic (sinusoidal) fringes
     (1D)
@@ -287,8 +286,8 @@ def contrast_period(x, u, P0, xlim = None, retfit = False):
     
     # Fit function to data and retrieve optimal parameters
     p0 = (np.mean(u), np.std(u), 0, P0)
-    bmin = [0, 0, -np.pi/2, 0]
-    bmax = [np.inf, np.inf, np.pi/2, np.inf]
+    bmin = [0, 0, -np.pi, 0]
+    bmax = [np.inf, np.inf, np.pi, np.inf]
     popt, pcov = curve_fit(fun, xaux, u, p0=p0, bounds=(bmin, bmax))
     A, B, phi, P = popt
     
@@ -302,3 +301,4 @@ def contrast_period(x, u, P0, xlim = None, retfit = False):
         return C, P, sdP, fit
     else:
         return C, P, sdP
+        

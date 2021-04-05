@@ -1,4 +1,7 @@
-# Talbot carpet for a grating using analytical solution
+# Talbot carpet/pattern for a grating using analytical solution
+
+# Diffraction from a binary amplitude / binary phase / sinusoidal amplitude grating
+# Using result from Case 2009.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,6 +53,7 @@ def fourier_coef_phase_gr(n, f, phi):
         a = np.exp(-1j*phi) - 1
         b = n*np.pi
         return a*np.sin(b*f)/b
+        
         
 '''
     Wave after binary amplitude grating

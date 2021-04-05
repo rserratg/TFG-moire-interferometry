@@ -309,20 +309,70 @@ def prism_phase_measurement():
     
     print('Phi:', phi)
     
-    
-# Sim 6: custom shape
-def customobj():
 
-    print("Simulation 6 - custom object")
+# Sim 6: prism with constant edges
+def prism_cnt_edges():
+
+    print("Simulation 6 - prism with constant edges")
     
     wave = OptWave(N,L,wvl)
     wave.planeWave()
     wave.rectAmplitudeGrating(P, x0=0)
     wave.angular_spectrum(zt/4)
     
-    #wave.trapezoidPhaseObject(phi, a, b)
+    grad = 10000
+    a = 2e-2
+    
+    # Prism
+    G = grad*(wave.x + a)
+    G[wave.x < -a] = 0
+    G[wave.x > a] = 2*grad*a 
+    
+    wave.U *= np.exp(-1j* G)
+    
+    plt.plot(wave.x*1e2, -G)
+    plt.xlabel('x [cm]')
+    plt.ylabel('Phase [rad]')
+    plt.show()
+    
+    wave.angular_spectrum(zt/4)
+    wave.rectAmplitudeGrating(P)
+    
+    #wave.angular_spectrum(zt/4)
+    
+    wave.angular_spectrum(2*f - zt/4)
+    wave.lens(f)
+    wave.angular_spectrum(f)
+    
+    plt.plot(wave.x*1e2, intensity(wave.U))
+    plt.xlabel('x [cm]')
+    plt.ylabel('Intensity [arb. units]')
+    plt.xlim(-0.5, 0.5)
+    plt.show()
         
-    grad = 5000
+    wave.rectAperture(D, x0=-0.25e-3)
+    wave.angular_spectrum(f)
+    
+    x = wave.x
+    I = intensity(wave.U)
+    
+    plt.plot(x*1e3,I)
+    plt.xlabel('x [mm]')
+    plt.ylabel('Intensity [arbitrary units]')
+    plt.show()
+    
+    
+# Sim 7: custom shape
+def customobj():
+
+    print("Simulation 7 - custom object")
+    
+    wave = OptWave(N,L,wvl)
+    wave.planeWave()
+    wave.rectAmplitudeGrating(P, x0=0)
+    wave.angular_spectrum(zt/4)
+    
+    grad = 10000
     a = 2e-2
     b = 1e-2
     
@@ -336,9 +386,12 @@ def customobj():
     #G[np.abs(wave.x) > a] = 2*grad*a
     #G[np.abs(wave.x) < b] = grad*(a+b)
     
+    # G = varphi(x)
     wave.U *= np.exp(-1j* G)
     
-    plt.plot(wave.x, G)
+    plt.plot(wave.x*1e2, -G)
+    plt.xlabel('x [cm]')
+    plt.ylabel('Phase [rad]')
     plt.show()
     
     wave.angular_spectrum(zt/4)
@@ -348,9 +401,15 @@ def customobj():
     
     wave.angular_spectrum(2*f - zt/4)
     wave.lens(f)
-    wave.angular_spectrum(f)    
-    #wave.rectAperture(D)
-    #wave.angular_spectrum(f)
+    wave.angular_spectrum(f)
+    
+    plt.plot(wave.x*1e2, intensity(wave.U))
+    plt.xlabel('x [cm]')
+    plt.ylabel('Intensity [arb. units]')
+    plt.show()
+        
+    wave.rectAperture(D, x0=-0.25e-3)
+    wave.angular_spectrum(f)
     
     x = wave.x
     I = intensity(wave.U)
@@ -372,6 +431,8 @@ elif numsim == 4:
 elif numsim == 5:
     prism_phase_measurement()
 elif numsim == 6:
+    prism_cnt_edges()
+elif numsim == 7:
     customobj()
 else:
     print("Incorrect sim number")
