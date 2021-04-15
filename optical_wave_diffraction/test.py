@@ -1,127 +1,141 @@
-# Test: fit to cos*cos
+# 3PGMI - analytical intensity pattern
+# (assuming monochromatic spherical wave)
 
 import numpy as np
 import matplotlib.pyplot as plt
-from optwavepckg import OptWave
-from optwavepckg.utils import intensity
-from scipy.optimize import curve_fit
+from scipy.signal import find_peaks
 
-# A + B*cos(2pi*fp*x + phi1)*cos(2pi*fm*x + phi2)
-def contrast_frequency(x, u, fp0, fm0, xlim = None):
-    
-    # Get only data inside interval limited by xlim
-    xaux = x
-    if xlim is not None:
-        xmin, xmax = xlim
-        cond1 = x >= xmin
-        cond2 = x <= xmax
-        cond = cond1 & cond2
-        xaux = x[cond]
-        u = u[cond]
-    
-    # Sin function to fit
-    def fun(xx, a1, b1, c1, d1, a2, b2, c2, d2):
-        
-        cos1 = 1 + 1*np.cos(2*np.pi*c1*xx + d1)
-        cos2 = a2 + b2*np.cos(2*np.pi*c2*xx + d2)
-        
-        return cos1*cos2
-    
-    # Fit function to data and retrieve optimal parameters
-    p0 = (1, 1, fp0, 0, 1, 1, fm0, 0)
-    bmin = [0, 0, 0, -np.pi, 0, 0, 0, -np.pi]
-    bmax = [np.inf, np.inf, np.inf, np.pi, np.inf, np.inf, np.inf, np.pi]
-    popt, pcov = curve_fit(fun, xaux, u, p0=p0, bounds=(bmin, bmax))
-    
-    #A, B, fp, fm, phi1, phi2 = popt
-    fp = popt[2]
-    fm = popt[6]
-    
-    # Calculate contrast
-    C = 0
-    
-    print(popt)
-    
-    fit = fun(x, *popt)
-    return C, fp, fm, fit
-        
-       
-# Numeric parameters
-N = 5e5
-S = 60e-3 # field size
-
-# Beam parameters
 wvl = 1.55e-6
-w0 = 1.6e-3
-z0 = 7.26e-3
+k = 2*np.pi/wvl
 
-# Grating settings
 P = 180e-6
+f1 = f2 = f3 = 1/P
 
-# Lens
-f = -75e-3
+L1 = 75e-3 + 32e-2
+D1 = 10e-2
+Lt = 1
 
-# Propagation
-L0 = 11e-2
-L1 = 32e-2
-D = 6.5e-2
-L = 1
-L2 = L - (-f + L1 + D)
+dvals = np.linspace(-5e-2, 5e-2, 101)
 
-if L2 < 0:
-    print('Invalid parameters: negative propagation')
-    exit()      
+y = np.linspace(-20e-3, 20e-3, 501)
 
-print('Calculating output pattern...')
+mmax = qmax = 20
+nmax = 20
 
-# Output pattern
-wave = OptWave(N,S,wvl)
-wave.gaussianBeam(w0, z0=z0)
-wave.angular_spectrum(L0)
-wave.lens(f)
-wave.angular_spectrum(L1)
-wave.rectPhaseGrating(P, np.pi/2)
-wave.angular_spectrum(D)
-wave.rectPhaseGrating(P, np.pi/2)
-wave.angular_spectrum(L2)
+def contrast_FT(d, u, f0, fmax = None):
 
-print('Calculating reference field...')
+    # Calculate fourier transform and frequencies
+    ft = np.abs(np.fft.rfft(u))
+    freq = np.fft.rfftfreq(len(u), d)
+    
+    # Discard components above max freq
+    if fmax is not None:
+        cond = freq < fmax
+        ft = ft[cond]
+        freq = freq[cond]
+    
+    # Find indices of peaks
+    # Maxima at f=0 and f=fmax are not considered as peaks
+    pks, _ = find_peaks(ft)
+    
+    # Find peak closer to f0
+    idx = (np.abs(freq[pks]-f0)).argmin()   # index of closer peak in pks
+    idx = pks[idx]                          # index of closer peak in original arrays (ft,freq)
+    
+    # Results
+    C = 2*ft[idx]/ft[0]
+    fd = freq[idx]
+    
+    # Plot ft, position of peaks (x) and moire peak (red dot) (for debugging)
+    if False:
+        plt.plot(freq, ft, '-o')
+        plt.plot(freq[pks], ft[pks], 'x')
+        plt.plot(freq[idx], ft[idx], 'ro')
+        plt.show()
+    
+    return C, fd
 
-# Reference pattern
-ref = OptWave(N,S,wvl)
-ref.gaussianBeam(w0, z0=z0)
-ref.angular_spectrum(L0)
-ref.lens(f)
-ref.angular_spectrum(L + f)
+# Fourier coeffs for 50/50 phase grating
+def coeffs(n, phi):
+    if n == 0:
+        return 1/2 + 1/2*np.exp(-1j*phi)
+    else:
+        return (np.exp(-1j*phi)-1)/(n*np.pi)*np.sin(n*np.pi/2)
 
-# Get results
-x = wave.x
-I = intensity(wave.U)
-Iref = intensity(ref.U)
-Is = I/Iref
+# Pattern for a specific D3
+def pattern(D3):
 
-'''
-print('Rebinning...')
+    L3 = Lt - D3 - D1 - L1
+    Laux = L1 + D1 + D3
 
-x, Is = rebin(x, Is, 500, avg=True)
-print('Rebin px:', x[1]-x[0])
-'''
+    Vy = np.zeros_like(y, dtype=np.complex128)
 
-print('Fitting...')
+    for m in range(-mmax, mmax+1):
+        
+        Am = coeffs(m, np.pi/2)
 
-# Calculate contrast from known period
-Pd = P*L/D
-c, fp, fm, fit = contrast_frequency(x, Is, 1/0.44*1e3, 1/Pd, xlim=(-15e-3,15e-3))
+        for n in range(-nmax, nmax+1):
+        
+            Bn = coeffs(n, np.pi)
+            
+            for q in range(-qmax, qmax+1):
+            
+                Cq = coeffs(q, np.pi/2)
+                
+                fd = m*f1*L1 + n*f2*(L1+D1) + q*f3*(L1+D1+D3)
+                fd /= Lt
+                
+                # Source term not considered
+                # fs = m*f1*(D1+D3+L3) + n*f2*(D3+L3) + q*f3*L3
+                # fs /= Lt
+                
+                phi0 = (2*np.pi*m*f1)**2*L1/Laux + (2*np.pi*n*f2)**2*D3/Laux
+                phi0 -= (2*np.pi*m*f1*L1/Laux - 2*np.pi*n*f2*D3/Laux)**2
+                phi0 *= Laux/(2*k)
+                
+                phi1 = (m*f1*L1/Laux + n*f2*(L1+D1)/Laux + q*f3)**2
+                phi1 *= 4*np.pi**2*L3*Laux/(2*k*Lt)
+                
+                Vy += Am*Bn*Cq * np.exp(1j*2*np.pi*fd*y) * np.exp(-1j*phi0 - 1j*phi1)
+                
+    return np.abs(Vy)**2
+    
+# Calculation
 
-print('Expected moire period:', Pd*1e3, 'mm')
-print('Contrast:', c)
-print('Fitted period 1:', 1/fp*1e3, 'mm')
-print('Fitted period 2:', 1/fm*1e3, 'mm')
+C = []
+F = []
 
-print('Plotting...')
+for D in dvals:
+    print(f'D: {D}')
+    D3 = D + D1
+    Id = pattern(D3)
+    fmoire = (1/P)*abs(D)/Lt
+    c, fd = contrast_FT(y[1]-y[0], Id, fmoire)
+    C.append(c)
+    F.append(fd)
+    
+C = np.asarray(C)
+F = np.asarray(F)
+    
+# Plot
 
-plt.plot(x*1e3, I/Iref)
-plt.plot(x*1e3, fit, '--')
-plt.xlabel('x [mm]')
-plt.ylabel('Intensity [arb. units]')
+fig, ax1 = plt.subplots()
+    
+color1 = 'tab:blue'
+ax1.set_xlabel('D3 - D1 [mm]')
+ax1.set_ylabel('Contrast', color=color1)
+#ax1.set_ylim(0, 1)
+ax1.plot(dvals*1e3, C, '-o', color=color1)
+
+ax2 = ax1.twinx()
+
+color2 = 'tab:red'
+ax2.set_ylabel('Frequency [mm^-1]', color=color2)
+ax2.plot(dvals*1e3, F*1e-3, 'x', color=color2)
+
+# Theoretical frequency
+Fd = (1/P)*np.abs(dvals)/Lt
+ax2.plot(dvals*1e3, Fd*1e-3, '-', color=color2)
+
+fig.tight_layout()
 plt.show()

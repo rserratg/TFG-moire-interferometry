@@ -214,7 +214,6 @@ def rebin2(x, y, u, bins, fast=False, avg=False):
 '''
 def contrast(x, u, P, xlim = None, retfit = False):
 
-    
     # Get only data inside interval limited by xlim
     xaux = x
     if xlim is not None:
@@ -242,7 +241,6 @@ def contrast(x, u, P, xlim = None, retfit = False):
     else:
         return C
         
-# WARNING: TEST FUNCTIONS
 '''
     Contrast and period from periodic (sinusoidal) fringes
     (1D)
@@ -269,7 +267,6 @@ def contrast(x, u, P, xlim = None, retfit = False):
 '''
 def contrast_period(x, u, P0, xlim = None, retfit = False):
 
-    
     # Get only data inside interval limited by xlim
     xaux = x
     if xlim is not None:

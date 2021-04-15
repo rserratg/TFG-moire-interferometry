@@ -8,7 +8,7 @@ from optwavepckg import OptWave
 from optwavepckg.utils import intensity, contrast, rebin
 
 # Sim parameters
-N = 1e6
+N = 5e5
 L = 60e-3
 
 # Beam parameters
@@ -19,8 +19,8 @@ z0 = 7.26e-3
 # Propagation
 L0 = 11e-2
 L1 = 32e-2
-D1 = 4e-2
-D3 = 7e-2
+D1 = 10e-2
+D3 = 30e-2
 L3 = 48e-2
 
 # Grating settings
@@ -57,14 +57,6 @@ ref.angular_spectrum(L1 + D1 + D3 + L3)
 x = wave.x
 I = intensity(wave.U)
 Iref = intensity(ref.U)
-
-print('Rebinning')
-
-'''
-xaux, I = rebin(x, I, 400, avg=False)
-_, Iref = rebin(x, Iref, 400, avg=False)
-x = xaux
-'''
 
 print('Fitting')
 

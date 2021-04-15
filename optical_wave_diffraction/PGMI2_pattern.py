@@ -1,5 +1,5 @@
-# Two phase-grating moire interferometer
-# Simulations to compare with experimental results
+# 2PGMI - Pattern at camera (1D or 2D)
+# Monochromatic beam
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ z0 = 7.26e-3
 # Propagation
 L0 = 11e-2
 L1 = 32e-2
-D = 15.7e-2
+D = 2.7e-2
 L = 1
 
 # Grating settings
@@ -66,8 +66,8 @@ def pattern():
     I = intensity(wave.U)
     
     # Reduce points in plot
-    xmin = -12.5e-3
-    xmax = 5e-3
+    xmin = -10e-3
+    xmax = 10e-3
     condx = (x >= xmin) & (x <= xmax) 
     x = x[condx]
     I = I[condx]
@@ -76,9 +76,9 @@ def pattern():
     plt.plot(x*1e3, I)
     plt.xlabel('x [mm]')
     plt.ylabel('Intensity [arbitrary units]')
-    #plt.show()
+    plt.show()
     
-    plt.savefig(f"./plots/Tests/PGMI2/PGMI2_{int(D*1e2)}.png")
+    #plt.savefig(f"./plots/Tests/PGMI2/PGMI2_{int(D*1e2)}.png")
 
 
 def image():
