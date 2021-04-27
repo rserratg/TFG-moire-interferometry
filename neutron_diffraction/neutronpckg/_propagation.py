@@ -17,23 +17,16 @@ class MixinProp:
         
         Parameters:
             - z (double): propagation distance
-            
-        TODO: CHANGE TO ACCOUNT FOR LOCALITY OF NEUTRONS SPACE
-        TODO: ZERO-PADDING OR NO ZERO-PADDING?
-        TODO: BANDLIMIT?
-        TODO: CHECK SHAPE OF RESULTING PSI
-        TODO: CHECK UPDATE OF L AND X
+            - bandlimit (double): 
+                if False, all momentum components are used
+                if double, momentum components above given value are eliminated
+                if True, maximum momentum is calculated from Nyquist theorem
+                By default True.
     '''
-    def propagate(self, z):
+    def propagate(self, z, bandlimit=True):
     
-        # kernel
-        def kernel(kx):
-            k = 2*np.pi/self.wvl
-            #vg = hbar*k/m_n # group velocity
-            #H = np.exp(-1j*hbar*kx**2*z/(2*m_n*vz))   
-            H = np.exp(-1j * kx**2 * z/(2*k))    
-            return H
-            
+        k = 2 * np.pi / self.wvl
+
         # Zero-padding
         
         # Wavefunction
@@ -41,14 +34,20 @@ class MixinProp:
         Psi[:, 0:self.Nx] = self.Psi        
         
         # Double frequency domain
-        kx = 2*np.pi*np.fft.fftfreq(2*self.Nx-1, self.d)    
+        kx = 2*np.pi*np.fft.fftfreq(2*self.Nx-1, self.d)
         
         # H = kernel in freq-space
-        H = kernel(kx)
+        H = np.exp(-1j * kx**2 * z/(2*k))
         
-        # if bandlimit:     
-        #   H = np.where(np.abs(kx) > bandlimit, 0, H)
-        
+        # if bandlimit == True, calculate max momentum
+        if (type(bandlimit) is bool) and bandlimit:  
+            df = 2*np.pi/(2 * self.Nx * self.d)
+            bandlimit = k * np.pi / (z*df)
+           
+        # if bandlimit != False, apply bandlimit (assuming bandlimit != 0)
+        if bandlimit:
+            H = np.where(np.abs(kx) > bandlimit, 0, H)
+            
         # Multiply each row of fft(Psi) by kernel
         S = np.fft.ifft(np.fft.fft(Psi, axis=1) * H, axis=1)
         self.Psi = S[:, 0:self.Nx]

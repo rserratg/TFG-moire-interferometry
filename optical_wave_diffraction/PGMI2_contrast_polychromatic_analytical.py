@@ -1,5 +1,5 @@
 # 2PGMI - theoretical frequency and contrast of moire fringes
-# Pusing expression from Miao 2016
+# Using expression from Miao 2016
 # Polychromatic beam
 
 # Wavelength distribution: 
@@ -48,18 +48,6 @@ def pi2coeffs(n):
         return 1/2 + 1/2*np.exp(-1j*np.pi/2)
     else:
         return (np.exp(-1j*np.pi/2)-1)/(n*np.pi)*np.sin(n*np.pi/2)
-        
-        
-# Params universal moire
-L1 = 10e-2
-P = 14.3e-6
-f1 = f2 = 1/P
-Dvals = np.linspace(0.05e-3, 5e-3, 300)
-L = 20e-2
-wvlvals = np.linspace(400, 700, 301)*1e-9
-wvlweights = None
-
-        
 
 # Main script
 

@@ -3,7 +3,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import json
 
 # Setup params
 
@@ -24,7 +23,7 @@ def pi2coeffs(n):
         return (np.exp(-1j*np.pi/2)-1)/(n*np.pi)*np.sin(n*np.pi/2)
     
 
-Dvals = np.linspace(0,200e-3, 201)[1:]
+Dvals = np.linspace(0,160e-3, 161)[1:]
 
 
 freq = []

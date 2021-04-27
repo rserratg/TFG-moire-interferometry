@@ -1,7 +1,9 @@
 # Utility functions for the OptWave and OptWave2 classes
 
 import numpy as np 
-from scipy.optimize import curve_fit    
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit   
+from scipy.signal import find_peaks 
     
 '''
     Field normalization to amplitude/intensity 1
@@ -191,6 +193,7 @@ def rebin2(x, y, u, bins, fast=False, avg=False):
     Contrast from periodic (sinusoidal) fringes with known period
     (1D)
     
+    Curve fitting method.
     Assuming U(x) = A + B*sin(2*pi*x/P + phi)
     
     Parameters:
@@ -245,6 +248,7 @@ def contrast(x, u, P, xlim = None, retfit = False):
     Contrast and period from periodic (sinusoidal) fringes
     (1D)
     
+    Curve fitting method.
     Assuming U(x) = A + B*sin(2*pi*x/P + phi)
     
     Parameters:
@@ -298,4 +302,60 @@ def contrast_period(x, u, P0, xlim = None, retfit = False):
         return C, P, sdP, fit
     else:
         return C, P, sdP
+       
         
+'''
+    Contrast of fringes using the Fourier Transform method
+    
+    Finds frequency f of the peak closer to f0.
+    Contrast is calculated as 2*abs(FT[f])/abs(FT[0])
+    
+    Params:
+        - d (double): sampling space period
+        - u (numpy.array): data to calculate contrast
+        - fmax (double): maximum frequency to consider. By default None.
+        - plotft (bool): 
+            If True, plot the Fourier Transform (up to fmax if given)
+            By default False.
+        
+    Returns:
+        - C (double): contrast of fringes
+        - fd (double): frequency of fringes
+        
+    Note:
+        - It is assumed that u is one-dimensional and real-valued (e.g. 1D intensity)
+'''
+def contrast_FT(d, u, f0, fmax = None, plotft = False):
+
+    # Calculate fourier transform and frequencies
+    ft = np.abs(np.fft.rfft(u))
+    freq = np.fft.rfftfreq(len(u), d)
+    
+    # Discard components above max freq
+    if fmax is not None:
+        cond = freq < fmax
+        ft = ft[cond]
+        freq = freq[cond]
+    
+    # Find indices of peaks
+    # Maxima at f=0 and f=fmax are not considered as peaks
+    pks, _ = find_peaks(ft)
+    
+    # Find peak closer to f0
+    idx = (np.abs(freq[pks]-f0)).argmin()   # index of closer peak in pks
+    idx = pks[idx]                          # index of closer peak in original arrays (ft,freq)
+    
+    # Results
+    C = 2*ft[idx]/ft[0]
+    fd = freq[idx]
+    
+    # Plot ft, position of peaks (x) and moire peak (red dot) (for debugging)
+    if plotft:
+        plt.plot(freq, ft, '-o')
+        plt.plot(freq[pks], ft[pks], 'x')
+        plt.plot(freq[idx], ft[idx], 'ro')
+        plt.xlabel(r'Frequency [$m^{-1}$]')
+        plt.ylabel('Amplitude [arbitrary units]')
+        plt.show()
+    
+    return C, fd

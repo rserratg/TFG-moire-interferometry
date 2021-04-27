@@ -18,20 +18,26 @@ class MixinWave:
             - L0: distance from slit
             - sw (double): slit width [m]. By default 1e-3.
             - theta (double): divergence angle of neutron beam [radians]. By default 3.5e-3.
-            
-        Note:
-            - If Nn = 1 the neutron is placed at the center of the slit (x0=0).
-              Otherwise they are uniformly distributed over the slit (including edges)
+            - randPos (bool):
+                If True, neutrons exit slit at a random position (uniform distribution).
+                If False, neutron are distributed uniformly over the slit (including edges).
+                By default True.
     '''
-    def slitSource(self, L0, sw=1e-3, theta=3.5e-3):
-        
-        # Place neutrons uniformly over slit
-        if self.Nn == 1:
-            self.x0 = np.array([[0.]])
+    def slitSource(self, L0, sw=1e-3, theta=3.5e-3, randPos=True):
+    
+        # Initial position in slit
+        # If randPos: random initial position 
+        # If not randPos and N=1: place at center
+        # If not randPos and N!=1: place uniformly over slit
+        if randPos:
+            self.x0 = (sw/2)*(2*np.random.rand(self.Nn,1) - 1)
         else:
-            self.x0 = np.round(np.linspace(-sw/2, sw/2, self.Nn)/self.d)*self.d
-            self.x0 = self.x0[np.newaxis].transpose()
-            
+            if self.Nn == 1:
+                self.x0 = np.array([[0.])
+            else:
+                self.x0 = np.linspace(-sw/2, sw/2, self.Nn)
+                self.x0 = self.x0[np.newaxis].transpose()
+                    
         # Divergence angle of each neutron
         self.theta = theta*(2*np.random.rand(self.Nn,1) - 1)
               

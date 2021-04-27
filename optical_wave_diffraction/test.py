@@ -17,9 +17,9 @@ Lt = 1
 
 dvals = np.linspace(-5e-2, 5e-2, 101)
 
-y = np.linspace(-20e-3, 20e-3, 501)
+y = np.linspace(-30e-3, 30e-3, 5001)
 
-mmax = qmax = 20
+mmax = qmax = 2
 nmax = 20
 
 def contrast_FT(d, u, f0, fmax = None):

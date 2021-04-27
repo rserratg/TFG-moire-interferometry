@@ -1,5 +1,6 @@
 # 3PGMI - theoretical frequency and contrast of moire fringes
 # Using expression from Miao 2016
+# Using approximation: only orders +1 and -1 from second grating are considered
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,8 +14,8 @@ f1 = f2 = f3 = 1/P
 
 # L1 = distance from point source to first grating
 L1 = 75e-3 + 32e-2
-D1 = 10e-2
-L = 1
+D1 = 30e-2
+L = 2
 
 '''
     Fourier series coeffs for binary phase grating
@@ -33,7 +34,7 @@ def phaseGrCoeffs(n, phi, f=0.5):
         
 
 # values for D3 - D1
-dvals = np.linspace(-5e-2, 5e-2, 1001)
+dvals = np.linspace(-5e-2, 5e-2, 251)
 
 freq = []
 cont = []
@@ -47,30 +48,24 @@ for D in dvals:
     fd = abs(((f3-f2)*(L-L3)+(f1-f2)*L1-f2*(D1-D3))/L)
     freq.append(fd)
     
-    delta1 = wvl*f1/L*(f1*L1*(D1+D3+L3) - 2*f2*L1*(D3+L3) + f3*L1*L3)
-    delta2 = wvl*f2/L*(f1*L1*(D3+L3) - 2*f2*(L1+D1)*(D3+L3) + f3*(L1+D1)*L3)
-    delta3 = wvl*f3/L*(f1*L1*L3 - 2*f2*(L1+D1)*L3 + f3*(L1+D1+D3)*L3)
+    B1 = phaseGrCoeffs(1, np.pi)
+    Bm1 = phaseGrCoeffs(-1, np.pi)
+    X2 = B1*np.conj(Bm1)
     
-    # Ambiguity functions X1 and X3
-    # Only orders m=-1 and m=0 are different than 0
+    delta1 = wvl*f1*L1/L*((f1-f2)*(L-L1)+(f3-f2)*L3-f2*(D3-D1))
+    delta3 = wvl*f3*L3/L*((f3-f2)*(L-L3)+(f1-f2)*L1-f2*(D1-D3))
+    
+    # Ambiguity functions.
+    # Only orders m=-1 and m=1 are different than 0
     X1 = 0
     X3 = 0
     for m in range(-1,1):
         Am = phaseGrCoeffs(m, np.pi/2)
         Am1 = phaseGrCoeffs(m+1, np.pi/2)
-        X1 += Am1*np.conj(Am)*np.exp(-1j*2*np.pi*(m+1/2)*delta1)
-        X3 += Am1*np.conj(Am)*np.exp(-1j*2*np.pi*(m+1/2)*delta3)
+        X1 += Am*np.conj(Am1)*np.exp(1j*2*np.pi*(m+1/2)*delta1)
+        X3 += Am*np.conj(Am1)*np.exp(1j*2*np.pi*(m+1/2)*delta3)
         
-    # "Ambiguity function" X2
-    # Only odd orders are different than 0
-    # n in range (nmin+2, nmax+4, step=2)
-    X2 = 0
-    for n in range(-13, 19, 2):
-        Bn = phaseGrCoeffs(n, np.pi)
-        Bn2 = phaseGrCoeffs(n-2, np.pi)
-        X2 += Bn2*np.conj(Bn)*np.exp(-1j*2*np.pi*(n-1)*delta2)
-        
-    cont.append(2*np.abs(X1)*np.abs(X2)*np.abs(X3))
+    cont.append(np.abs(X1)*np.abs(X2)*np.abs(X3))
     
 freq = np.asarray(freq)
 cont = np.asarray(cont)

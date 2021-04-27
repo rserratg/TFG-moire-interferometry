@@ -65,7 +65,7 @@ def contrast_FT(d, u, f0, fmax = None):
 
 # GENERAL PARAMETERS
 
-numsim = 1
+numsim = 2
 
 # Beam parameters
 wvl = 1.55e-6
@@ -142,14 +142,14 @@ def contrast_single():
 def contrast_vs_D():
     
     # Numerical parameters
-    N = 1e5
+    N = 1e6
     S = 60e-3
     
     # Setup
     L0 = 11e-2
     L1 = 32e-2
-    D1 = 30e-2
-    L = 2
+    D1 = 10e-2
+    L = 1
     
     # values for D3 - D1
     dvals = np.linspace(-5e-2, 5e-2, 101)

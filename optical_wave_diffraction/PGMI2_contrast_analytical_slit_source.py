@@ -32,8 +32,9 @@ L = 20e-2
 sw = 0.44e-3 # slit width
 
 wvlvals = np.linspace(350, 800, 501)
+#wvlvals = np.linspace(450, 700, 25)
 wvlweights = 2.5e6*skewnorm.pdf(wvlvals, 5, loc=500, scale=100)
-#wvlweights += 0*26000*np.exp(-(wvlvals-450)**2/25**2)
+wvlweights += 26000*np.exp(-(wvlvals-450)**2/25**2)
 wvlvals *= 1e-9
 
 plt.plot(wvlvals*1e9, wvlweights, 'o-')
@@ -95,7 +96,7 @@ fig, ax1 = plt.subplots()
 color = 'tab:blue'
 ax1.set_xlabel('D [mm]')
 ax1.set_ylabel('Contrast', color=color)
-ax1.plot(Dvals*1e3, cont*2, color=color)
+ax1.plot(Dvals*1e3, cont*2, '-o', color=color)
 ax1.set_ylim([0,1])
 
 ax2 = ax1.twinx()
@@ -106,3 +107,11 @@ ax2.plot(Dvals*1e3, freq*1e-3, color=color)
 
 fig.tight_layout()
 plt.show()
+
+import json
+data = {}
+data['dvals'] = Dvals.tolist()
+data['contrast'] = cont.tolist()
+data['frequency'] = freq.tolist()
+with open('./plots/Tests/PGMI2/Contrast_data/PGMI2_miao2016_analytical.json', 'w') as fp:
+    json.dump(data, fp)

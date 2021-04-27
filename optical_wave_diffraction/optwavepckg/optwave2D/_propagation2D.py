@@ -358,8 +358,9 @@ class MixinProp2D:
         Fx2, Fy2 = np.meshgrid(fx2, fy2)
         Fsq = Fx2 + Fy2
         
-        Fsq = np.where(Fsq>1/self.wvl**2, 0, Fsq) # remove evanescent waves
-        m = np.sqrt(1/self.wvl**2 - Fsq)
+        m = 1/self.wvl**2 - Fsq
+        m = np.where(m>0, m, 0) # remove evanescent waves
+        m = np.sqrt(m)
 
         H = np.exp(1j*2*np.pi*z*m)
         return H 

@@ -8,10 +8,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json 
 
-with open("./plots/Tests/PGMI2/Contrast_data/pgmi2_contrast_data_simulation.json", 'rb') as fp:
+with open("./plots/Tests/PGMI2/Contrast_data/PGMI2_miao2016_sim.json", 'rb') as fp:
     datasim = json.load(fp)
     
-with open("./plots/Tests/PGMI2/Contrast_data/pgmi2_contrast_data_theoretical.json", 'rb') as fp:
+with open("./plots/Tests/PGMI2/Contrast_data/PGMI2_miao2016_analytical.json", 'rb') as fp:
     datath = json.load(fp)
     
 
@@ -27,8 +27,8 @@ ax2 = ax1.twinx()
 
 color = 'tab:red'
 ax2.set_ylabel('Frequency [mm^-1]', color=color)
-ax2.plot(np.array(datasim['dvals'])*1e3, np.array(datasim['freq'])*1e-3, 'x', color=color)
-ax2.plot(np.array(datath['dvals'])*1e3, np.array(datath['freq'])*1e-3, '-', color=color)
+ax2.plot(np.array(datasim['dvals'])*1e3, np.array(datasim['frequency'])*1e-3, 'x', color=color)
+ax2.plot(np.array(datath['dvals'])*1e3, np.array(datath['frequency'])*1e-3, '-', color=color)
 
 fig.tight_layout()
 plt.show()

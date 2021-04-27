@@ -62,7 +62,7 @@ class MixinProp:
 
         # H = kernel in freq-space
         H = np.fft.fft(kernel(x))
-
+        
         S = np.fft.ifft(np.fft.fft(U)*H) * self.d
         self.U = S[N-1:]
 
@@ -123,7 +123,7 @@ class MixinProp:
 
         S = np.fft.ifft(np.fft.fft(U)*H)
         self.U = S[0:N]
-
+        
         # Print bandlimit and max freq for debugging
         #print("B: ", bandlimit)
         #print("f: ", fx.max())        
@@ -286,8 +286,9 @@ class MixinProp:
     '''
     def _kernelAS(self, z, fx):
         fsq = fx**2
-        fsq = np.where(fsq>1/self.wvl**2, 0, fsq) # remove evanescent waves
-        m = np.sqrt(1/self.wvl**2 - fsq)
+        m = 1/self.wvl**2 - fsq
+        m = np.where(m>0, m, 0) # remove evanescent waves
+        m = np.sqrt(m)
         H = np.exp(1j*2*np.pi*z*m)
         return H
 
@@ -355,7 +356,7 @@ class MixinProp:
                 N = len(self.x)
                 df = 1/(self.d*N)
                 if pad: # if zero-padding is used, domain is doubled
-                    df /= 2
+                    df /= 2   
                 bandlimit = self._bandlimitAS(z,df)
             
             if pad:

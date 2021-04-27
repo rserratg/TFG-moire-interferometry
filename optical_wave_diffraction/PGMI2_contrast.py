@@ -3,69 +3,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg.utils import intensity
+from optwavepckg.utils import intensity, contrast_FT
 from scipy.signal import find_peaks
-
-'''
-    Contrast of fringes using the Fourier Transform method
-    
-    Finds frequency f of the peak closer to f0.
-    Contrast is calculated as 2*abs(FT[f])/abs(FT[0])
-    
-    Params:
-        - d (double): sampling space period
-        - u (numpy.array): data to calculate contrast
-        - fmax (double): maximum frequency to consider
-        
-    Returns:
-        - C (double): contrast of fringes
-        - fd (double): frequency of fringes
-        
-    Note:
-        - (2PGMI) f0 should be the expected frequency of the Moire fringes
-        - (2PGMI) fmax should be the frequency of the Talbot fringes from the first grating
-        - It is assumed that u is one-dimensional and real-valued
-        - Usually the peak at f_moire is the highest apart from the ones at f=0 and f=max.
-          However, sometimes there is another peak between f_moire and fmax that is higher.
-'''
-def contrast_FT(d, u, f0, fmax):
-    
-    # Calculate fourier transform and frequencies
-    ft = np.abs(np.fft.rfft(u))
-    freq = np.fft.rfftfreq(len(u), d)
-    
-    # Discard components above max freq
-    cond = freq < fmax
-    ft = ft[cond]
-    freq = freq[cond]
-    
-    # Find indices of peaks
-    # Maxima at f=0 and f=fmax are not considered as peaks
-    pks, _ = find_peaks(ft)
-    
-    # Find peak closer to f0
-    idx = (np.abs(freq[pks]-f0)).argmin()   # index of closer peak in pks
-    idx = pks[idx]                          # index of closer peak in original arrays (ft,freq)
-    
-    # Results
-    C = 2*ft[idx]/ft[0]
-    fd = freq[idx]
-    
-    # Plot ft, position of peaks (x) and moire peak (red dot) (for debugging)
-    if False:
-        plt.plot(freq, ft, '-o')
-        plt.plot(freq[pks], ft[pks], 'x')
-        plt.plot(freq[idx], ft[idx], 'ro')
-        plt.show()
-    
-    return C, fd
     
     
 ###################################
 
 # GENERAL PARAMETERS
 
-numsim = 2
+numsim = 1
 
 # Beam parameters
 wvl = 1.55e-6
@@ -89,7 +35,7 @@ def contrast_single():
     # Setup
     L0 = 11e-2
     L1 = 32e-2
-    D = 4e-2
+    D = 13.7e-2
     L = 1
     L2 = L - (-f + L1 + D)
     
@@ -118,7 +64,7 @@ def contrast_single():
     
     fmoire = (1/P)*D/L          # expected freq of moire fringes
     ftalbot = (1/P)*(-f+L1)/L   # freq of Talbot fringes from first grating
-    C, fd = contrast_FT(d, I, fmoire, ftalbot)
+    C, fd = contrast_FT(d, I, fmoire, None, plotft=True)
     
     # Show results
     print()

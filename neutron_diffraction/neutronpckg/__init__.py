@@ -1,5 +1,5 @@
 import numpy as np
-from . import _elements, _propagation, _wavefunctions
+from . import _elements, _propagation, _wavefunctions, _plotting
 
 '''
     Class NeutronWave represents a neutron matter-wave
@@ -23,7 +23,8 @@ from . import _elements, _propagation, _wavefunctions
 class NeutronWave(
     _elements.MixinElem,
     _propagation.MixinProp,
-    _wavefunctions.MixinWave
+    _wavefunctions.MixinWave,
+    _plotting.MixinDraw
 ):
 
     '''
