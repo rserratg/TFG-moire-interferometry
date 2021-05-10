@@ -81,10 +81,11 @@ for D in Dvals:
             X1 += Am*np.conj(Am1)*np.exp(1j*2*np.pi*(m+1/2)*delta1)
             X2 += np.conj(Am)*Am1*np.exp(-1j*2*np.pi*(m+1/2)*delta2)
             
-        cwvl.append(np.abs(X1)*np.abs(X2))
+        # Keep sign/phase for average!
+        cwvl.append(X1*X2)
             
     cd = np.average(cwvl, weights=wvlweights) # contrast for d value
-    cont.append(cd)
+    cont.append(np.abs(cd))
     
 freq = np.asarray(freq)
 cont = np.asarray(cont)

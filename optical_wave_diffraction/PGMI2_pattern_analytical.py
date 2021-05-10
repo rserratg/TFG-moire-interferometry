@@ -10,12 +10,12 @@ k = 2*np.pi/wvl
 P = 180e-6
 f1 = f2 = 1/P
 
-L1 = 75e-3 + 32e-2
-D = 2.7e-2
-L = 1
+L1 = 75e-3 + 98e-2
+D = 8.75e-2
+L = 208e-2
 L2 = L - D - L1
 
-y = np.linspace(-10e-3, 10e-3, 501)
+y = np.linspace(-30e-3, 30e-3, 4801)
 
 mmax = nmax = 50
 
@@ -51,3 +51,12 @@ plt.plot(y, I)
 plt.xlabel('y [mm]')
 plt.ylabel('Intensity')
 plt.show()
+
+'''
+ft = np.abs(np.fft.rfft(I))
+freq = np.fft.rfftfreq(len(y), y[1]-y[0])
+plt.plot(freq, ft)
+plt.xlabel('Frequency [m^-1]')
+plt.ylabel('Amplitude [a.u.]')
+plt.show()
+'''

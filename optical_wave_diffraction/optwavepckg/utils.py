@@ -313,6 +313,7 @@ def contrast_period(x, u, P0, xlim = None, retfit = False):
     Params:
         - d (double): sampling space period
         - u (numpy.array): data to calculate contrast
+        - f0 (double): expected frequency of fringes
         - fmax (double): maximum frequency to consider. By default None.
         - plotft (bool): 
             If True, plot the Fourier Transform (up to fmax if given)

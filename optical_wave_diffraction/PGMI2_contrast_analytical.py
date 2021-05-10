@@ -4,6 +4,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# PARAMETERS
+
 # Setup params
 
 wvl = 1.55e-6
@@ -12,8 +14,12 @@ P = 180e-6
 f1 = f2 = 1/P
 
 # L1 = distance from point source to first grating
-L1 = 32e-2 + 75e-3
-L = 1
+L1 = 98e-2 + 75e-3
+L = 208e-2
+
+Dvals = np.linspace(1e-2,11e-2, 201)
+
+# AUXILIARY FUNCTIONS
 
 # Fourier series coeffs for pi/2 grating
 def pi2coeffs(n):
@@ -22,9 +28,7 @@ def pi2coeffs(n):
     else:
         return (np.exp(-1j*np.pi/2)-1)/(n*np.pi)*np.sin(n*np.pi/2)
     
-
-Dvals = np.linspace(0,160e-3, 161)[1:]
-
+# SIMULATION
 
 freq = []
 cont = []
@@ -61,7 +65,7 @@ fig, ax1 = plt.subplots()
 color = 'tab:blue'
 ax1.set_xlabel('D [mm]')
 ax1.set_ylabel('Contrast', color=color)
-ax1.plot(Dvals*1e3, cont, color=color)
+ax1.plot(Dvals*1e3, 2*cont, color=color)
 
 ax2 = ax1.twinx()
 

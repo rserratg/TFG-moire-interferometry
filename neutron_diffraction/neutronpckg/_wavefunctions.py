@@ -33,7 +33,7 @@ class MixinWave:
             self.x0 = (sw/2)*(2*np.random.rand(self.Nn,1) - 1)
         else:
             if self.Nn == 1:
-                self.x0 = np.array([[0.])
+                self.x0 = np.array([[0.]])
             else:
                 self.x0 = np.linspace(-sw/2, sw/2, self.Nn)
                 self.x0 = self.x0[np.newaxis].transpose()

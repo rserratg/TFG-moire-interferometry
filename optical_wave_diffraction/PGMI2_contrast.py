@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
 from optwavepckg.utils import intensity, contrast_FT
-from scipy.signal import find_peaks
     
     
 ###################################

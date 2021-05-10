@@ -9,7 +9,7 @@ from neutronpckg import NeutronWave
 Nx = 9e4
 Sx = 2e-3
 L0 = 1.2
-sw = 281e-6
+sw = 200e-6
 D = 23e-6
 z = 5
 
@@ -21,7 +21,7 @@ wave.Psi = np.ones_like(wave.Psi)
 #wave.slit(D)
 wave.doubleSlit(126.3e-6, 22.2e-6)
 
-wave.propagate(2)
+wave.propagate(z)
 
 x = wave.X.T
 I = np.abs(wave.Psi.T)**2

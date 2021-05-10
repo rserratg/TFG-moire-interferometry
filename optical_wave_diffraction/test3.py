@@ -4,7 +4,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
-from optwavepckg.utils import normalizedIntensity, intensity, contrast_FT
+from optwavepckg.utils import intensity, contrast_period
+from scipy.optimize import curve_fit
 from scipy.stats import skewnorm
 import json
 
@@ -30,6 +31,47 @@ Dvals = np.linspace(0.1e-3, 5e-3, 50)
 P = 14.3e-6
 phi = np.pi/2
 
+
+# AUXILIARY FUNCTIONS
+
+'''
+    Contrast by fitting sine
+    Return error in contrast
+'''
+def contrast_error(x, u, P, xlim = None):
+
+    # Get only data inside interval limited by xlim
+    xaux = x
+    if xlim is not None:
+        xmin, xmax = xlim
+        cond1 = x >= xmin
+        cond2 = x <= xmax
+        cond = cond1 & cond2
+        xaux = x[cond]
+        u = u[cond]
+    
+    # Sin function to fit
+    def fun(xx, a, b, c):
+        return a + b*np.sin(2*np.pi*xx/P + c)
+    
+    # Fit function to data and retrieve optimal parameters
+    popt, pcov = curve_fit(fun, xaux, u)
+    A, B, phi = popt
+    
+    # Calculate contrast
+    C = abs(B/A)
+    
+    # Contrast error
+    perr = np.sqrt(np.diag(pcov))
+    Aerr, Berr, _ = perr
+    Cerr = Berr/A + Aerr*B/A**2
+    
+    fit = fun(x, A, B, phi)
+    return C, Cerr, fit
+
+
+# SIMULATION
+
 # Get x-space (independent of wavelength)
 ref = OptWave(N, Sx, wvl=None)
 x = ref.x
@@ -40,6 +82,7 @@ print('Running simulation...')
 
 freq = []
 cont = []
+cerr = []
 
 for D in Dvals:
 
@@ -81,16 +124,13 @@ for D in Dvals:
         
     Pmoire = P*L/D
     
-    # Method 1: period and contrast with FT
-    #C, fd = contrast_FT(d, I, 1/Pmoire)
-    
-    # Method 2: period with fit, contrast with second fit (fixed period)
     _, Pd, _ = contrast_period(x, I, Pmoire, xlim=(-18e-3, 18e-3))
-    C = contrast(x, I, Pd, xlim=(-18e-3, 18e-3))
+    C, Cerr, _ = contrast_error(x, I, Pd, xlim=(-18e-3, 18e-3))
     fd = 1/Pd
     
     freq.append(fd)
     cont.append(C)
+    cerr.append(Cerr)
     
     print()
     print(f"Contrast: {C}")
@@ -99,15 +139,12 @@ for D in Dvals:
 # Convert to numpy array
 freq = np.asarray(freq)
 cont = np.asarray(cont)
+cerr = np.asarray(cerr)
 
-# Store data
-print('Storing data')
-data = {}
-data['dvals'] = Dvals.tolist()
-data['contrast'] = cont.tolist()
-data['frequency'] = freq.tolist()
-with open('./plots/Tests/PGMI2/Contrast_data/PGMI2_miao2016_sim.json', 'w') as fp:
-    json.dump(data, fp)
+# Read analytical (theoretical) data
+print('Reading analytical data')
+with open('./Contrast_data/PGMI2_miao2016_sim.json', 'rb') as fp:
+    datath = json.load(fp)
 
 # Plot
 print('Plotting')
@@ -117,18 +154,17 @@ fig, ax1 = plt.subplots()
 color1 = 'tab:blue'
 ax1.set_xlabel('D [mm]')
 ax1.set_ylabel('Contrast', color=color1)
-ax1.plot(Dvals*1e3, cont, 'o', color=color1)
+#ax1.plot(Dvals*1e3, cont, 'o', color=color1)
+ax1.errorbar(Dvals*1e3, cont, yerr=cerr, fmt='o', color=color1)
+ax1.plot(np.array(datath['dvals'])*1e3, np.array(datath['contrast'])*2, '-', color=color1)
 
 ax2 = ax1.twinx()
 
 color2 = 'tab:red'
 ax2.set_ylabel('Frequency [mm^-1]', color=color2)
 ax2.plot(Dvals*1e3, freq*1e-3, 'x', color=color2)
-
-# Theoretical frequency
-Fd = (1/P)*Dvals/L
-ax2.plot(Dvals*1e3, Fd*1e-3, '-', color=color2)
+ax2.plot(np.array(datath['dvals'])*1e3, np.array(datath['frequency'])*1e-3, '-', color=color2)
 
 fig.tight_layout()
-#plt.show()
+plt.show()
 

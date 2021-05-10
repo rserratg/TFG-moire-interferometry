@@ -1,5 +1,5 @@
 # 2PGMI - Contrast of polychromatic, extended source
-# Miao 2016
+# Miao et. al. 2016
 
 import numpy as np
 import matplotlib.pyplot as plt
