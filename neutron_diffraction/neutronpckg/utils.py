@@ -40,10 +40,9 @@ def contrast_fit(x, u, P0, xlim = None, fitP = False):
         return a + b*np.sin(2*np.pi*xx/d + c)
         
     # Fit function to data and retrieve optimal parameters
-    # TODO: initial guesses
     if fitP:
         p0 = (np.mean(u), np.std(u), 0, P0)
-        bmin = [0,0,0,0]
+        bmin = [0,0,-2*np.pi,0]
         bmax = [np.inf,np.inf,2*np.pi,np.inf]
         popt, _ = curve_fit(fun, xaux, u, p0=p0, bounds=(bmin,bmax))
         A, B, phi, P = popt

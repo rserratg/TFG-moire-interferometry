@@ -3,6 +3,12 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import json
+
+# OPTIONS
+plot = False
+store = True
+datapath = "./Contrast_data/PGMI2_contrast_analytical.json"
 
 # PARAMETERS
 
@@ -15,7 +21,7 @@ f1 = f2 = 1/P
 
 # L1 = distance from point source to first grating
 L1 = 98e-2 + 75e-3
-L = 208e-2
+L = 2 + 75e-3
 
 Dvals = np.linspace(1e-2,11e-2, 201)
 
@@ -60,18 +66,35 @@ for D in Dvals:
 freq = np.asarray(freq)
 cont = np.asarray(cont)
 
-fig, ax1 = plt.subplots()
+# Store results
+if store:
 
-color = 'tab:blue'
-ax1.set_xlabel('D [mm]')
-ax1.set_ylabel('Contrast', color=color)
-ax1.plot(Dvals*1e3, 2*cont, color=color)
+    print("Storing results")
 
-ax2 = ax1.twinx()
+    data = {}
+    data['dvals'] = Dvals.tolist()
+    data['contrast'] = cont.tolist()
+    data['frequency'] = freq.tolist()
+    with open(datapath, 'w') as fp:
+        json.dump(data, fp)
 
-color = 'tab:red'
-ax2.set_ylabel('Frequency [mm^-1]', color=color)
-ax2.plot(Dvals*1e3, freq*1e-3, color=color)
+# Plot
+if plot:
 
-fig.tight_layout()
-plt.show()
+    print("Plotting")
+
+    fig, ax1 = plt.subplots()
+
+    color = 'tab:blue'
+    ax1.set_xlabel('D [mm]')
+    ax1.set_ylabel('Contrast', color=color)
+    ax1.plot(Dvals*1e3, 2*cont, color=color)
+
+    ax2 = ax1.twinx()
+
+    color = 'tab:red'
+    ax2.set_ylabel('Frequency [mm^-1]', color=color)
+    ax2.plot(Dvals*1e3, freq*1e-3, color=color)
+
+    fig.tight_layout()
+    plt.show()

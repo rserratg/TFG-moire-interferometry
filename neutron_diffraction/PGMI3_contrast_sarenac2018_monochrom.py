@@ -10,13 +10,13 @@ import json
 # PARAMETERS    
 
 # Options
-plot = True
+plot = False
 store = True
-datapath = './contrast_data/PGMI3_sarenac2018_sim.json'
+datapath = './contrast_data/PGMI3_sarenac2018_monochrom.json'
 
 # Sim
-Nx = 8e4
-Sx = 8e-3  # Set to wavefunction extension at camera (a bit more to avoid edge issues)
+Nx = 12e4
+Sx = 12e-3  # Set to wavefunction extension at camera (a bit more to avoid edge issues)
 Nn = 100    # Number of neutrons per iteration
 iters = 100 # Num of iterations. Total neutrons = iters*Nn
 
@@ -68,18 +68,19 @@ for D in dvals:
         wave = NeutronWave(Nx, Sx, Nn=Nn, wvl=wvl)
         wave.slitSource(L1, sw, theta=theta, randPos=True)
         wave.rectPhaseGrating(P,phi1)
-        wave.propagate_nopad(D1)
+        wave.propagate(D1, pad=False)
         wave.rectPhaseGrating(P,phi2)
-        wave.propagate_nopad(D3)
+        wave.propagate(D3, pad=False)
         wave.rectPhaseGrating(P,phi3)
-        wave.propagate_nopad(L3)
+        wave.propagate(L3, pad=False)
         
         center, htemp = wave.hist_intensity(numbins, xlimits=(xmin,xmax), retcenter=True)
         hist += htemp
     
     P0 = abs(P*L/D)
-    C, Pd, fit = contrast_fit(center, hist, P0, fitP = True)
-   
+    _, Pd, _ = contrast_fit(center, hist, P0, fitP = True)
+    C, _, fit = contrast_fit(center, hist, Pd, fitP=False)   
+
     print()
     print(f"Contrast: {C}")
     print(f"Period: {Pd}")
@@ -128,7 +129,7 @@ if plot:
     ax2.plot(dvals*1e3, freq*1e-3, 'x', color=color2)
 
     # Theoretical frequency
-    Fd = (1/P)*dvals/L
+    Fd = np.abs((1/P)*dvals/L)
     ax2.plot(dvals*1e3, Fd*1e-3, '-', color=color2)
 
     fig.tight_layout()

@@ -10,8 +10,8 @@ from scipy import stats, constants
 
 # OPTIONS
 approx = True  # use n = +/- 1 only
-store = False    # store data in json
-datapath  = './contrast_data/PGMI3_sarenac2018_analytical.json'
+store = True    # store data in json
+datapath  = './contrast_data/PGMI3_sarenac2018_maxwell_analytical.json'
 
 # PARAMETERS
 
@@ -34,12 +34,14 @@ hbar = constants.hbar
 kb = constants.Boltzmann
 
 
-#v = np.linspace(0,3000,3001)
-wvlvals = np.linspace(0.10e-9, 10e-9, 100)
+wvlvals = np.linspace(0.1e-9, 3e-9, 300)
 wvlweights = stats.maxwell.pdf(2*np.pi*hbar/m/wvlvals, scale=np.sqrt(kb*T/m))
+wvlweights /= wvlvals**2
 wvlweights /= wvlweights.sum()
 
-plt.plot(wvlvals*1e9, wvlweights)
+print(np.average(wvlvals, weights=wvlweights))
+
+plt.plot(wvlvals*1e9, wvlweights, '-')
 plt.xlabel('wavelength [nm]')
 plt.ylabel('weight')
 plt.show()
@@ -67,6 +69,10 @@ def phaseGrCoeffs(n, phi, f=0.5):
 freq = []
 cont = []
 
+#dvals = np.array([1.2e-2])
+#wvlvals = np.array([0.5e-9])
+#wvlweights = np.array([1])
+
 for D in dvals:
 
     print(D)
@@ -92,6 +98,11 @@ for D in dvals:
         delta2 = wvl*f2/L*(f1*L1*(D3+L3) - 2*f2*(L1+D1)*(D3+L3) + f3*(L1+D1)*L3)
         delta3 = wvl*f3/L*(f1*L1*L3 - 2*f2*(L1+D1)*L3 + f3*(L1+D1+D3)*L3)
         
+        #print(f"delta1: {delta1}")
+        #print(f"delta2: {delta2}")
+        #print(f"delta3: {delta3}")
+        #print()
+        
         # Ambiguity functions X1 and X3
         # Only orders m=-1 and m=0 are different than 0
         X1 = 0
@@ -106,7 +117,7 @@ for D in dvals:
             # X2 - approx
             B1 = phaseGrCoeffs(1, np.pi)
             Bm1 = phaseGrCoeffs(-1, np.pi)
-            X2 = B1*np.conj(Bm1)
+            X2 = np.conj(B1)*Bm1
         else:
             # "Ambiguity function" X2
             # Only odd orders are different than 0

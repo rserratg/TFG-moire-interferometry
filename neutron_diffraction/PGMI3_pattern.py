@@ -14,8 +14,8 @@ from neutronpckg.utils import contrast_fit
 
    
 # Sim
-Nx = 8e4
-Sx = 8e-3
+Nx = 20e4
+Sx = 20e-3
 Nit = 100
 
 # Source
@@ -28,7 +28,7 @@ theta = 0.2*np.pi/180
 L = 8.8
 Ls2 = 4.75
 D1 = 4.6e-2
-D = -2.5e-2 # D3 - D1
+D = 1.5e-2 # D3 - D1
 
 L1 = Ls2 - D1
 D3 = D1 + D
@@ -41,8 +41,8 @@ phi2 = np.pi
 phi3 = np.pi*0.5
 
 # Plotting
-xmin = -20e-3
-xmax = 20e-3
+xmin = -15e-3
+xmax = 15e-3
 numbins = int(2e4)
 
 center = np.empty(numbins-1)
@@ -57,13 +57,13 @@ for ii in range(Nit):
     wave.slitSource(L1, sw, theta=theta, randPos=True)
     print("  Second prop")
     wave.rectPhaseGrating(P,phi1)
-    wave.propagate_nopad(D1)
+    wave.propagate(D1, pad=False)
     print("  Third prop")
     wave.rectPhaseGrating(P,phi2)
-    wave.propagate_nopad(D3)
+    wave.propagate(D3, pad=False)
     print("  Last prop")
     wave.rectPhaseGrating(P,phi3)
-    wave.propagate_nopad(L3)
+    wave.propagate(L3, pad=False)
     print("  Results")
     center, htemp = wave.hist_intensity(numbins, xlimits=(xmin,xmax), retcenter=True)
     hist += htemp/Nit
@@ -74,8 +74,10 @@ print('Period:', abs(P*L/D)*1e3, 'mm')
 width = center[1]-center[0]
 plt.plot(center*1e3, hist, '-')
 
-C, Pd, fit = contrast_fit(center, hist, abs(P*L/D), fitP=True)
-print('Period fit:', Pd)
+Pd = abs(P*L/D)
+_, Pd, _ = contrast_fit(center, hist, abs(P*L/D), fitP=True)
+C, _, fit = contrast_fit(center, hist, Pd, fitP=False)
+print('Period fit:', Pd*1e3, 'mm')
 print('Contrast:', C)
 plt.plot(center*1e3, fit, '--', color='orange')
 

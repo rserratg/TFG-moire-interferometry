@@ -102,6 +102,11 @@ for D in dvals:
     
     cont.append(2*np.abs(c))
     
+    print()
+    print(f"D: {D*1e3} mm")
+    print(f"Period: {0 if fd==0 else 1/fd*1e3} mm")
+    print(f"Contrast: {2*np.abs(c)}")
+    
 freq = np.asarray(freq)
 cont = np.asarray(cont)
 

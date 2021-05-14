@@ -80,11 +80,11 @@ for D in dvals:
         wave = NeutronWave(Nx, Sx, Nn=1, wvl=wvl)
         wave.slitSource(L1, sw, theta=theta, randPos=True)
         wave.rectPhaseGrating(P,phi1)
-        wave.propagate_nopad(D1)
+        wave.propagate(D1, pad=False)
         wave.rectPhaseGrating(P,phi2)
-        wave.propagate_nopad(D3)
+        wave.propagate(D3, pad=False)
         wave.rectPhaseGrating(P,phi3)
-        wave.propagate_nopad(L3)
+        wave.propagate(L3, pad=False)
         
         center, htemp = wave.hist_intensity(numbins, xlimits=(xmin,xmax), retcenter=True)
         hist += htemp

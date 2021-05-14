@@ -1,16 +1,23 @@
 # PGMI2 - contrast of moire fringes, calculated with the Fourier Transform method
+# Simulation 1: contrast of a single pattern
+# Simulation 2: plot contrast and frequency vs grating separation D
 
 import numpy as np
 import matplotlib.pyplot as plt
 from optwavepckg import OptWave
 from optwavepckg.utils import intensity, contrast_FT
+import json    
     
-    
-###################################
+########################################################
 
 # GENERAL PARAMETERS
 
 numsim = 1
+
+# Options sim 2
+plot = False
+store = False
+datapath = "./Contrast_data/PGMI2_contrast.json"
 
 # Beam parameters
 wvl = 1.55e-6
@@ -28,14 +35,14 @@ f = -75e-3
 def contrast_single():
     
     # Numerical parameters
-    N = 5e5
+    N = 1e6
     S = 100e-3
     
     # Setup
     L0 = 11e-2
-    L1 = 32e-2
-    D = 13.7e-2
-    L = 1
+    L1 = 98e-2
+    D = 8.8e-2
+    L = 2 + 75e-3
     L2 = L - (-f + L1 + D)
     
     if L2 < 0:
@@ -88,11 +95,10 @@ def contrast_vs_D():
     
     # Setup
     L0 = 11e-2
-    L1 = 32e-2
-    L = 1
+    L1 = 98e-2
+    L = 2 + 75e-3
     
-    dvals = np.linspace(0, 200e-3, 201)
-    dvals = dvals[1:]
+    dvals = np.linspace(1e-2, 11e-2, 201)
     
     print('Initial propagation')
     
@@ -135,30 +141,44 @@ def contrast_vs_D():
     # Conver to numpy array
     C = np.asarray(C)
     F = np.asarray(F)
-    
-    print('Plotting...')
-    
-    fig, ax1 = plt.subplots()
-    
-    color1 = 'tab:blue'
-    ax1.set_xlabel('D [mm]')
-    ax1.set_ylabel('Contrast', color=color1)
-    #ax1.set_ylim(0, 1)
-    ax1.plot(dvals*1e3, C, 'o', color=color1)
-    
-    ax2 = ax1.twinx()
-    
-    color2 = 'tab:red'
-    ax2.set_ylabel('Frequency [mm^-1]', color=color2)
-    ax2.plot(dvals*1e3, F*1e-3, 'x', color=color2)
-    
-    # Theoretical frequency
-    Fd = (1/P)*dvals/L
-    ax2.plot(dvals*1e3, Fd*1e-3, '-', color=color2)
-    
-    fig.tight_layout()
-    plt.show()
 
+    # Store results
+    if store:
+        
+        print("Storing data")
+
+        data = {}
+        data['dvals'] = dvals.tolist()
+        data['contrast'] = C.tolist()
+        data['frequency'] = F.tolist()
+        with open(datapath, 'w') as fp:
+            json.dump(data, fp)
+
+    # Plot
+    if plot:
+    
+        print('Plotting...')
+    
+        fig, ax1 = plt.subplots()
+    
+        color1 = 'tab:blue'
+        ax1.set_xlabel('D [mm]')
+        ax1.set_ylabel('Contrast', color=color1)
+        #ax1.set_ylim(0, 1)
+        ax1.plot(dvals*1e3, C, 'o', color=color1)
+    
+        ax2 = ax1.twinx()
+    
+        color2 = 'tab:red'
+        ax2.set_ylabel('Frequency [mm^-1]', color=color2)
+        ax2.plot(dvals*1e3, F*1e-3, 'x', color=color2)
+    
+        # Theoretical frequency
+        Fd = (1/P)*dvals/L
+        ax2.plot(dvals*1e3, Fd*1e-3, '-', color=color2)
+    
+        fig.tight_layout()
+        plt.show()
 
 ####################################
 

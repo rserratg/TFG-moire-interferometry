@@ -20,12 +20,11 @@ f = -75e-3 # lens focal for cone beam
 # System parameters
 P = 180e-6
 
-Lt = 1 # distance from source to screen
+Lt = 2 + 75e-3 # distance from source to screen
 L0 = 11e-2
-L1 = 32e-2
+L1 = 98e-2
 
-D = np.linspace(0e-3, 500e-3, 101)
-D = D[1:]
+D = np.linspace(0e-3, 80e-3, 401)
 
 phi = np.pi/2
 
@@ -42,7 +41,7 @@ wave.rectPhaseGrating(P, phi)
 x = wave.x
 u = wave.U
 I = []
-mask = np.abs(x) <= 20e-3 # central part of image
+mask = np.abs(x) <= 15e-3 # central part of image
 
 # Test for different values of D
 # Last value of D is not calculated because pcolormesh will not plot it
@@ -68,6 +67,6 @@ plt.ylabel('D [mm]')
 clb.set_label('Intensity [arbitrary units]')
 plt.tight_layout()
 
-plt.savefig('Test_moire.png', dpi=800)
+plt.savefig('PGMI2_carpet-d.png', dpi=800)
 
 #plt.show()
