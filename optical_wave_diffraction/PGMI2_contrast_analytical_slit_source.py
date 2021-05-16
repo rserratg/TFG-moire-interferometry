@@ -37,11 +37,10 @@ wvlweights = 2.5e6*skewnorm.pdf(wvlvals, 5, loc=500, scale=100)
 #wvlweights += 26000*np.exp(-(wvlvals-450)**2/25**2)
 wvlvals *= 1e-9
 
-plt.plot(wvlvals*1e9, wvlweights, 'o-')
+plt.plot(wvlvals*1e9, wvlweights, '-o')
 plt.xlabel('Wavelength [nm]')
 plt.ylabel('Intensity [a.u.]')
 plt.show()
-#exit()
 
 # Main script
 
@@ -49,7 +48,7 @@ freq = []
 cont = []
 
 # Calculate frequency and contrast for each value of D
-for D in [1.1e-2]:
+for D in Dvals:
 
     print(f'D: {D}')
 
