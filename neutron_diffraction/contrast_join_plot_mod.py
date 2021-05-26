@@ -4,14 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 
-#path_sim = "./contrast_data/PGMI2_pushin2017_bichrom_sim.json"
-#path_th = "./contrast_data/PGMI2_pushin2017_bichrom_analytical.json"
+path_sim = "./contrast_data/PGMI3_sarenac2018_monochrom.json"
+path_th = "./contrast_data/PGMI3_sarenac2018_monochrom_analytical.json"
+path_th2 = "./contrast_data/PGMI3_sarenac2018_monochrom_analytical_approx.json"
 
-#path_sim = "./contrast_data/PGMI3_sarenac2018_monochrom.json"
-#path_th = "./contrast_data/PGMI3_sarenac2018_monochrom_analytical.json"
-
-path_sim = "./contrast_data/PGMI3_sarenac2018_maxwell_par.json"
-path_th = "./contrast_data/PGMI3_sarenac2018_maxwell_analytical.json"
 
 Cfactor = 1 # factor to multiply contrast (1 or 2)
 
@@ -20,6 +16,9 @@ with open(path_sim, "rb") as fp:
 
 with open(path_th, "rb") as fp:
     datath = json.load(fp)
+    
+with open(path_th2, "rb") as fp:
+    datath2 = json.load(fp)
 
 fig, ax1 = plt.subplots()
 
@@ -28,6 +27,7 @@ ax1.set_xlabel('D [mm]')
 ax1.set_ylabel('Contrast', color=color)
 ax1.plot(np.array(datasim['dvals'])*1e3, datasim['contrast'], 'o', color=color)
 ax1.plot(np.array(datath['dvals'])*1e3, np.array(datath['contrast'])*Cfactor, '-', color=color)
+ax1.plot(np.array(datath2['dvals'])*1e3, np.array(datath2['contrast'])*Cfactor, '--', color='tab:purple')
 
 ax2 = ax1.twinx()
 

@@ -34,7 +34,7 @@ sw = 0.44e-3 # slit width
 wvlvals = np.linspace(350, 800, 501)
 #wvlvals = np.linspace(450, 700, 25)
 wvlweights = 2.5e6*skewnorm.pdf(wvlvals, 5, loc=500, scale=100)
-#wvlweights += 26000*np.exp(-(wvlvals-450)**2/25**2)
+wvlweights += 26000*np.exp(-(wvlvals-450)**2/25**2)
 wvlvals *= 1e-9
 
 plt.plot(wvlvals*1e9, wvlweights, '-o')
@@ -77,7 +77,6 @@ for D in Dvals:
         # Note: X1 and X2 are real values, but the result can be either positive or negative
         # For appropiate results, the average should take into account this sign
         # For this reason the absolute value is taken at the end
-        #c = np.abs(X1)*np.abs(X2)
         c = X1*X2
         
         # Source period

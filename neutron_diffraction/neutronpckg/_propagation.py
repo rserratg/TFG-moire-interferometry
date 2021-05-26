@@ -218,4 +218,4 @@ class MixinProp:
         self.X[:] -= (z**2*F*m_n)/(hbar*k*np.cos(self.theta))**2/2
         
         # Apply linear phase
-        self.theta = np.arctan(np.tan(self.theta) - (F*z*m_n)/(hbar*k*np.cos(self.theta)**2))
+        self.theta = np.arctan(np.tan(self.theta) - (F*z*m_n)/(hbar*k*np.cos(self.theta))**2)

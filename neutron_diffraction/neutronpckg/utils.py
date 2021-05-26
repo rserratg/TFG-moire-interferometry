@@ -42,10 +42,15 @@ def contrast_fit(x, u, P0, xlim = None, fitP = False):
     # Fit function to data and retrieve optimal parameters
     if fitP:
         p0 = (np.mean(u), np.std(u), 0, P0)
-        bmin = [0,0,-2*np.pi,0]
-        bmax = [np.inf,np.inf,2*np.pi,np.inf]
-        popt, _ = curve_fit(fun, xaux, u, p0=p0, bounds=(bmin,bmax))
+
+        # Note: adding bounds the fit often fails (not optimal results)
+        #bmin = [0,0,-np.inf,0]
+        #bmax = [np.inf,np.inf,np.inf,np.inf]
+        #popt, _ = curve_fit(fun, xaux, u, p0=p0, bounds=(bmin,bmax))
+
+        popt, _ = curve_fit(fun, xaux, u, p0=p0)
         A, B, phi, P = popt
+        P = abs(P)
     else:
         p0 = (np.mean(u), np.std(u), 0)
         popt, _ = curve_fit(lambda xx,a,b,c : fun(xx,a,b,c,P0), xaux, u, p0=p0)

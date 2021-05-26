@@ -8,8 +8,8 @@ import json
 
 # OPTIONS
 approx = False  # use n = +/- 1 only
-store = True    # store data in json
-datapath  = './contrast_data/PGMI3_sarenac2018_analytical.json'
+store = False    # store data in json
+datapath  = './contrast_data/PGMI3_sarenac2018_monochrom_analytical_approx.json'
 
 # PARAMETERS
 
@@ -22,6 +22,7 @@ f1 = f2 = f3 = 1/P
 L = 8.8     # Slit to detector
 Ls2 = 4.75  # Slit 2nd grating
 D1 = 4.6e-2
+D1 = 1
 
 # D2 - D1
 dvals = np.linspace(-25e-3, 25e-3, 201)
