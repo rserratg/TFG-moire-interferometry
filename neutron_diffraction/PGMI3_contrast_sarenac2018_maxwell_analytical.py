@@ -39,12 +39,11 @@ wvlweights = stats.maxwell.pdf(2*np.pi*hbar/m/wvlvals, scale=np.sqrt(kb*T/m))
 wvlweights /= wvlvals**2
 wvlweights /= wvlweights.sum()
 
-print(np.average(wvlvals, weights=wvlweights))
-
 plt.plot(wvlvals*1e9, wvlweights, '-')
 plt.xlabel('wavelength [nm]')
 plt.ylabel('weight')
 plt.show()
+exit()
 
 # AUXILIARY FUNCTIONS
 

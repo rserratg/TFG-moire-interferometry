@@ -17,7 +17,7 @@ from optwavepckg.utils import intensity
 
 # Number of plot to calculate
 # To save all, choose -1
-numplot = 8
+numplot = 7
 
 # Beam parameters
 wvl = 1.55e-6
@@ -41,8 +41,6 @@ Lx = 30e-3
 Ly = 5e-3
 
 def generate_plot(phi, z):
-    
-    z = 2.13e-2
 
     phase = 'Pi' if phi==np.pi else 'Pi2'
     d = z*1e2
@@ -76,8 +74,8 @@ def generate_plot(phi, z):
     
     #plt.show()
     
-    # Watch out for aliasing issues!
-    plt.savefig(f"./plots/Talbot_conebeam_2d/Sim_{phase}_{d:.2f}cm.png", dpi=400)
+    # Watch out for aliasing issues in the plot! (must use high enough dpi)
+    plt.savefig(f"./plots/Talbot_conebeam_2d/Sim_{phase}_{d:.2f}cm.png", dpi=800)
     
 # Main script
 

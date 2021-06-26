@@ -45,7 +45,7 @@ class MixinWave:
         self.L = L0
         
         # Update sampling space
-        self.X[:] += self.x0[:] + L0*self.theta[:]
+        self.X[:] += self.x0[:] + L0*np.tan(self.theta[:])
         
         # Coherence length
         sigma = self.wvl * L0 / sw

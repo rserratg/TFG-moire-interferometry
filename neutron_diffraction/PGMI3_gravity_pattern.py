@@ -1,4 +1,4 @@
-# PGMI3 - pattern - test - execution in parallel
+# Neutron 3PGMI - pattern - linear potential (gravity)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,12 +7,18 @@ from neutronpckg.utils import contrast_fit
 from multiprocessing import Pool, cpu_count
 from scipy.constants import g, m_n
 from scipy.optimize import curve_fit
+import pickle
+
+# Options
+plot = True
+store = True
+datapath = "./contrast_data/PGMI3_pattern_5deg.data"
 
 # Parallel
 procs = 5
 
 # Potential
-alpha = 0.25*np.pi/180
+alpha = 2*np.pi/180
 F = g * m_n * np.sin(alpha)
 
 # Sim
@@ -68,6 +74,7 @@ def contrast_fit_phase(x, u, P0):
     #popt, _ = curve_fit(fun, x, u, p0=p0, bounds=(bmin,bmax), jac=jac)
 
     A, B, phi = popt
+    fit = fun(x, A, B, phi)
    
     # If B<0 fix phase
     if B < 0:
@@ -75,7 +82,6 @@ def contrast_fit_phase(x, u, P0):
  
     phi = phi % (2*np.pi)
     C = abs(B/A)
-    fit = fun(x, A, B, phi)
     return C, phi, fit
 
 # Single iteration
@@ -89,6 +95,7 @@ def single_iteration(itnum):
     wave.propagate_linear_potential(D3, F, pad=False)
     wave.rectPhaseGrating(P,phi3)
     wave.propagate_linear_potential(L3, F, pad=False)
+    #wave.propagate(L3, pad=False)
     _, htemp = wave.hist_intensity(numbins, xlimits=(xmin,xmax), retcenter=True)
     print(f"Iteration finished: {itnum}")
     return htemp
@@ -122,9 +129,21 @@ if __name__ == "__main__":
     print(f"Period fit: {Pd}")
     print(f"Contrast: {C}")
     print(f"Phase: {phase} rad")
+    
+    if plot:
 
-    # Plot
-    plt.plot(center*1e3, hist, '-')
-    plt.plot(center*1e3, fit, '--', color='orange')
-    plt.xlabel('x [mm]')
-    plt.show()
+        # Plot
+        plt.plot(center*1e3, hist, '-')
+        plt.plot(center*1e3, fit, '--', color='orange')
+        plt.xlabel('x [mm]')
+        plt.show()
+        
+    if store:
+        
+        data = {
+            'center': center,
+            'hist': hist
+        }
+        
+        with open(datapath, "wb") as fp:
+            pickle.dump(data, fp)

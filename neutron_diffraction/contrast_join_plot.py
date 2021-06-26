@@ -4,16 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 
-#path_sim = "./contrast_data/PGMI2_pushin2017_bichrom_sim.json"
-#path_th = "./contrast_data/PGMI2_pushin2017_bichrom_analytical.json"
+path_sim = "./contrast_data/PGMI2_pushin2017_monochrom_sim_fixedIniPos.json"
+path_th = "./contrast_data/PGMI2_pushin2017_monochrom_analytical.json"
 
 #path_sim = "./contrast_data/PGMI3_sarenac2018_monochrom.json"
 #path_th = "./contrast_data/PGMI3_sarenac2018_monochrom_analytical.json"
 
-path_sim = "./contrast_data/PGMI3_sarenac2018_maxwell_par.json"
-path_th = "./contrast_data/PGMI3_sarenac2018_maxwell_analytical.json"
+#path_sim = "./contrast_data/PGMI3_sarenac2018_maxwell_par.json"
+#path_th = "./contrast_data/PGMI3_sarenac2018_maxwell_analytical.json"
 
-Cfactor = 1 # factor to multiply contrast (1 or 2)
+Cfactor = 2 # factor to multiply contrast (1 or 2)
 
 with open(path_sim, "rb") as fp:
     datasim = json.load(fp)

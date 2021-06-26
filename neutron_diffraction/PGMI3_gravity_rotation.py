@@ -1,4 +1,6 @@
-# 3PGMI - Neutron - contrast
+# Neutron 3PGMI
+# Linear potential (gravity)
+# Phase vs rotation of interferometer
 # Parameters from Sarenac et al 2018
 
 import numpy as np
@@ -8,12 +10,14 @@ from neutronpckg.utils import contrast_fit
 from scipy.optimize import curve_fit
 from scipy.constants import g, m_n
 from multiprocessing import Pool, cpu_count
-import json
+import pickle
 
 # PARAMETERS    
 
 # Options
 plot = True
+store = True
+datapath = "./contrast_data/PGMI3_gravity_rotation.data"
 numprocs = 7 # number of processes to run in parallel
 
 # Sim
@@ -51,7 +55,7 @@ xmin = -20e-3
 xmax = 20e-3
 numbins = int(2e4)
 
-# Fit sine and return contrast, phase and fitted function
+# Fit sine and return contrast, phase, phase standard error, and fitted function
 # Period fixed at P0
 def contrast_fit_phase(x, u, P0):
     
@@ -65,21 +69,25 @@ def contrast_fit_phase(x, u, P0):
         return np.asanyarray([da, db, dc]).transpose()
 
     p0 = (np.mean(u), np.std(u), 0)
-    popt, _ = curve_fit(fun, x, u, p0=p0, jac=jac)
+    popt, pcov = curve_fit(fun, x, u, p0=p0, jac=jac)
     
     #bmin = [0, 0, -2*np.pi]
     #bmax = [np.inf, np.inf, 2*np.pi]
     #popt, _ = curve_fit(fun, x, u, p0=p0, bounds=(bmin,bmax), jac=jac)
     
+    # Get fit results and standard error for phase
     A, B, phi = popt
+    perr = np.sqrt(np.diag(pcov))
+    phi_err = perr[2]
 
+    # Apply correction to phi
     if B < 0:
         phi += np.pi
-    
     phi = phi%(2*np.pi)
+    
     C = abs(B/A)
     fit = fun(x, A, B, phi)
-    return C, phi, fit
+    return C, phi, phi_err, fit
 
 # Contrast for a given value of alpha
 def contrast_alpha(alpha):
@@ -110,11 +118,11 @@ def contrast_alpha(alpha):
 
     P0 = abs(P*L/D)
     _, Pd, _ = contrast_fit(center, hist, P0, fitP=True)
-    C, phase, fit = contrast_fit_phase(center, hist, Pd)
+    C, phase, phase_err, fit = contrast_fit_phase(center, hist, Pd)
 
     print(f"Finished: {alpha} rad")
 
-    return C, 1/Pd, phase
+    return C, 1/Pd, phase, phase_err
 
 # Main script
 if __name__ == "__main__":
@@ -127,20 +135,22 @@ if __name__ == "__main__":
 
     with Pool(numprocs) as pool:
         res = pool.map(contrast_alpha, avals)
-        cont, freq, phase = zip(*res)
+        cont, freq, phase, phase_err = zip(*res)
 
     # Convert to numpy arrays
     cont = np.asarray(cont)
     freq = np.asarray(freq)
     phase = np.asarray(phase)
+    phase_err = np.asarray(phase_err)
 
     # Print
-    for a, c, f, p in zip(avals, cont, freq, phase):
+    for a, c, f, p, e in zip(avals, cont, freq, phase, phase_err):
         print()
         print(f"Rotation: {a} rad")
         print(f"Period: {1/f*1e3} mm")
         print(f"Contrast: {c}")
         print(f"Phase: {p} rad")
+        print(f"Phase error: {e} rad")
 
     # Plot
 
@@ -149,7 +159,7 @@ if __name__ == "__main__":
         print('Plotting')
 
         # avals from rad to deg
-        avals *= 180/np.pi
+        avals_aux = avals*180/np.pi
 
         fig, ax1 = plt.subplots()
         
@@ -157,7 +167,7 @@ if __name__ == "__main__":
         ax1.set_xlabel('alpha [deg]')
         ax1.set_ylabel('Contrast', color=color1)
         #ax1.set_ylim(0, 1)
-        ax1.plot(avals, cont, '-o', color=color1)
+        ax1.plot(avals_aux, cont, '-o', color=color1)
 
         ax2 = ax1.twinx()
 
@@ -167,7 +177,31 @@ if __name__ == "__main__":
         #ax2.plot(avals, freq*1e-3, 'x', color=color2)
 
         ax2.set_ylabel('Phase [rad]', color=color2)
-        ax2.plot(avals, phase, '-x', color=color2)
+        ax2.plot(avals_aux, phase, '-x', color=color2)
 
         fig.tight_layout()
         plt.show()
+        
+    # Store
+    
+    # Data is stored in a pickle file
+    # Dictionary with numpy arrays: 
+    # - rotation
+    # - frequency
+    # - contrast
+    # - phase
+    # - phase_err
+    
+    if store:
+    
+        data = {
+            "rotation": avals,
+            "frequency": freq,
+            "contrast": cont,
+            "phase": phase,
+            "phase_err": phase_err
+        }
+        
+        with open(datapath, "wb") as fp:
+            pickle.dump(data, fp)
+        

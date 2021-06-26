@@ -183,7 +183,7 @@ class MixinProp:
         # Update propagation distance and global coordinates
         self.L += z
         self.X[:] += z*np.tan(self.theta[:])
-
+        
     '''
         Propagate with linar potential
         Paraxial approximation
@@ -215,7 +215,7 @@ class MixinProp:
         self.propagate(z, bandlimit, pad)
 
         # Apply field displacement due to potential
-        self.X[:] -= (z**2*F*m_n)/(hbar*k*np.cos(self.theta))**2/2
+        self.X[:] -= (z**2*F*m_n)/(hbar*k*np.cos(self.theta[:]))**2/2
         
         # Apply linear phase
         self.theta = np.arctan(np.tan(self.theta) - (F*z*m_n)/(hbar*k*np.cos(self.theta))**2)

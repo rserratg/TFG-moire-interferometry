@@ -49,8 +49,6 @@ class MixinElem:
             - phi (double): phase shift
             - ff (double): fill factor / duty cycle. By default 0.5.
             - x0: position shift. By default 0.
-            
-        TODO: ADD CALCULATION OF PHASE SHIFT BASED ON HEIGHT, MATERIAL AND WAVELENGTH
     '''
     def rectPhaseGrating(self, P, phi, ff=0.5, x0=0.):
         X = self.X - x0
