@@ -17,12 +17,12 @@ Some simple cases can be compared with their analytical solutions (analytic resu
 These functions are sampled in the current wave x-space.
 
 ### Class attributes
-    - dx: x-space sampling interval
-    - dy: y-space sampling interval
-    - x: x-space sampling points
-    - y: y-space sampling points
-    - wvl: wavelength
-    - U: wave function (complex) amplitude at sampling points
+- dx: x-space sampling interval
+- dy: y-space sampling interval
+- x: x-space sampling points
+- y: y-space sampling points
+- wvl: wavelength
+- U: wave function (complex) amplitude at sampling points
 
 ### Function list
 
