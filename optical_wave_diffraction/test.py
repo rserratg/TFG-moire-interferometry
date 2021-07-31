@@ -7,11 +7,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import json 
+import csv
 
 Cfactor = 2 # factor to multiply analytical contrast (1 or 2)
 
-path_sim = "./plots/Tests/PGMI2/Contrast_data/PGMI2_contrast.py"
-path_th = "./plots/Tests/PGMI2/Contrast_data/PGMI2_contrast_analytical.py"
+path_sim = "./plots/Tests/PGMI2/Contrast_data/PGMI2_contrast.json"
+path_th = "./plots/Tests/PGMI2/Contrast_data/PGMI2_contrast_analytical.json"
+path_exp = "./plots/Tests/PGMI2/Contrast_data/PGMI2_contrast_experimental.csv"
 
 with open(path_sim, 'rb') as fp:
     datasim = json.load(fp)
@@ -19,6 +21,14 @@ with open(path_sim, 'rb') as fp:
 with open(path_th, 'rb') as fp:
     datath = json.load(fp)
     
+with open(path_exp, 'r') as fp:
+    aux = []
+    reader = csv.reader(fp, quoting=csv.QUOTE_NONNUMERIC)
+    for row in reader:
+        aux.append(row)
+    dataexp={}
+    dataexp['dvals'] = aux[0]
+    dataexp['contrast'] = aux[1]
 
 fig, ax1 = plt.subplots()
 
@@ -27,6 +37,8 @@ ax1.set_xlabel('D [mm]')
 ax1.set_ylabel('Contrast', color=color)
 ax1.plot(np.array(datasim['dvals'])*1e3, datasim['contrast'], 'o', color=color)
 ax1.plot(np.array(datath['dvals'])*1e3, np.array(datath['contrast'])*Cfactor, '-', color=color)
+
+ax1.plot(np.array(dataexp['dvals']), np.array(dataexp['contrast']), 'x:', color='tab:green')
 
 ax2 = ax1.twinx()
 

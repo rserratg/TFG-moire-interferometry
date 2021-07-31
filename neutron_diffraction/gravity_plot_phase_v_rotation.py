@@ -10,8 +10,10 @@ from scipy.stats import chisquare
 import pickle
 
 # OPTIONS
-
-datapath = "./contrast_data/PGMI3_gravity_rotation.data"
+if False:
+    datapath = "./contrast_data/PGMI3_gravity_rotation.data"
+else:
+    datapath = "./contrast_data/PGMI3_gravity_rotation_nopotential.data"
 
 # --------------------
 
@@ -73,10 +75,12 @@ m = constants.m_n
 wvl = 5e-10
 
 # Grating parameters
-d12 = 1
-d23 = 1.01
-P = 2.4e-6
-theta = wvl/P 
+D1 = 1          # G1 to G2
+D3 = 1.01       # G2 to G3
+L3 = 3.04       # G3 to cam
+P = 2.4e-6      # Grating period
+theta = wvl/P   # Diffraction angle
+Pd = 2.112e-3   # Period of pattern at camera
 
 # Fit parameters
 B_fit = B
@@ -84,14 +88,21 @@ B_err = Berr
 #g_val = 9.80665
 g_val = constants.g
 
-B_val = B_calc(d12, d23, theta, m, g_val, 2*np.pi/wvl)
+B_val = B_calc(D1, D3, theta, m, g_val, 2*np.pi/wvl)
 
 # Extra phase accounting for last propagation
-Lsq = 2.01**2 #  5.05**2 - 2.01**2
-Pd = 2.112e-3
+Lsq = (D1+D3+L3)**2 - (D1+D3)**2
 hbar = constants.hbar
 v = 2*np.pi*hbar/m/wvl
 extra = np.pi/Pd * Lsq/v**2 * g_val
+
+# Extra phase accounting for last propagation (without potential)
+extra_nopot = 2*np.pi/Pd * L3 * (D1+D3) * m**2*g_val / (hbar*2*np.pi/wvl)**2
+
+# Extra phase due to gravity inside the gratings
+# TODO: check this
+h = constants.h
+extra_inside = np.pi*wvl**2*m**2 / (P*h**2) * g_val * ((D1+D3)**2 - 2*D3**2)
 
 # Theoretical line (using same A as fit)
 thline = A + B_val * np.sin(rotation)
@@ -102,40 +113,23 @@ print(f"Fit B: {B_fit}")
 print(f"Fit uncertainty: {B_err}")
 print(f"Relative uncertainty: {100*Berr/B_fit} %")
 print(f"Relative error: {100*abs(1-B_fit/B_val)} %")
-print(f"Phase correction: {extra}")
 print()
-print("Fit g: %.3f"%(B_fit/B_calc(d12, d23, theta, m, 1, 2*np.pi/wvl)))
-print("Relative Uncertainty: %.3f%%"%(100*abs(1-g_val/B_fit*B_calc(d12, d23, theta, m, 1, 2*np.pi/5e-10))))
+print(f"Phase correction after G3: {extra}")
+print(f"Phase correction after G3 (no potential): {extra_nopot}")
+print(f"Phase correction between gratings: {extra_inside}")
+print()
+print("Fit g: %.3f"%(B_fit/B_calc(D1, D3, theta, m, 1, 2*np.pi/wvl)))
+print("Relative Uncertainty: %.3f%%"%(100*abs(1-g_val/B_fit*B_calc(D1, D3, theta, m, 1, 2*np.pi/5e-10))))
 
 # CHI-SQ TEST
 print()
 print("Chi-square test results (chisq, p-value):")
-print(chisquare(phase, f_exp=thline))
+print(chisquare(phase, f_exp=fit))
     
 # PLOT
 # Phase (in rad ) vs rotation (in deg)
 
 rotation = rotation*180/np.pi
-
-'''
-fig1 = plt.figure(1)
-
-# Plot data
-frame1 = fig1.add_axes((.1,.3,.8,.6))
-plt.plot(rotation, fit % (2*np.pi), color='tab:orange')
-plt.errorbar(rotation, phase % (2*np.pi), yerr=phase_err, fmt='.', color='tab:blue')
-plt.plot(rotation, thline % (2*np.pi), '--', color='tab:green')
-frame1.set_ylabel("Phase [rad]")
-frame1.set_xticklabels([]) # remove x-tick labels for the first frame
-
-# Plot residuals (phase - theoretical values)
-frame2 = fig1.add_axes((.1,.1,.8,.2))
-plt.errorbar(rotation, phase - thline, yerr=phase_err, fmt='.', color='tab:red')
-frame2.set_ylabel("Residuals [rad]")
-
-plt.xlabel("Rotation [deg]")
-plt.show()
-'''
 
 fig = plt.figure()
 gs = fig.add_gridspec(2, 1, hspace=0, height_ratios=[3,1])
@@ -145,7 +139,7 @@ ax1.plot(rotation, fit % (2*np.pi), color='tab:orange')
 ax1.errorbar(rotation, phase % (2*np.pi), yerr=phase_err, fmt='.', color='tab:blue')
 ax1.plot(rotation, thline % (2*np.pi), '--', color='tab:green')
 
-ax2.errorbar(rotation, phase - thline, yerr=phase_err, fmt='.', color='tab:red')
+ax2.errorbar(rotation, phase - fit, yerr=phase_err, fmt='.', color='tab:red')
 
 ax1.set_ylabel("Phase [rad]")
 ax2.set_ylabel("Residuals [rad]")

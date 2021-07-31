@@ -10,6 +10,7 @@ from . import _analyticResults2D, _elements2D, _propagation2D, _wavefunctions2D
         - dy: y-space sampling interval
         - x: x-space sampling points
         - y: y-space sampling points
+        - wvl: wavelength
         - U: wave function (complex) amplitude at sampling points (in xy-space)
 '''
 

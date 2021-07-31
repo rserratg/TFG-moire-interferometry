@@ -63,8 +63,8 @@ wave.propagate_linear_potential(D3, F, pad=False)
 print(wave.theta)
 
 wave.rectPhaseGrating(P, phi3)
-wave.propagate_linear_potential(L3, F, pad=False)
-#wave.propagate(L3, pad=False)
+#wave.propagate_linear_potential(L3, F, pad=False)
+wave.propagate(L3, pad=False)
 
 print(wave.theta)
 
