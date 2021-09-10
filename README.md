@@ -11,4 +11,8 @@ Codes for the final research project (TFG) for the degree in Engineering Physics
 - **optical_wave_diffraction**: code for simulation of diffraction of optical waves, both in 1D and 2D. Contains the optwavepckg module as well as a number of scripts using it.
 - **neutron_diffraction**: code for simulation of diffraction of neutron matter waves (in 1D). Containts the neutronpckg module and some scripts used for the project.
 
+### Notes
+
+The thesis should eventually be publicly available at the [UPCommons](https://upcommons.upc.edu/) website.
+
 
