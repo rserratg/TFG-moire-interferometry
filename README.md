@@ -13,6 +13,5 @@ Codes for the final research project (TFG) for the degree in Engineering Physics
 
 ### Notes
 
-The thesis should eventually be publicly available at the [UPCommons](https://upcommons.upc.edu/) website.
-
+The written report for this thesis is publicly available at the [UPCommons](https://upcommons.upc.edu/handle/2117/352072) website.
 
